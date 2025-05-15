@@ -1,13 +1,24 @@
 <template>
   <div>
-    <h1>Hello World</h1>
+    <NavBar />
+    <transition name="fade" mode="out-in">
+      <router-view />
+    </transition>
   </div>
 </template>
 
 <script setup>
-
+import NavBar from './components/NavBar.vue'
 </script>
 
-<style lang="css" scoped>
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+
+
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 
 </style>
