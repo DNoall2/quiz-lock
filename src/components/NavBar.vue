@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar">
     <router-link to="/">Site List</router-link>
-    <router-link to="/quizzes">Quizzes</router-link>
+    <router-link to="/quizzes">Quiz List</router-link>
     <router-link to="/settings">Settings</router-link>
   </nav>
 </template>
