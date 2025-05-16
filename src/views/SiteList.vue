@@ -23,7 +23,7 @@
 <script setup>
 import { ref } from 'vue';
 import BlockedSite from '../components/BlockedSite.vue';
-import { useExtensionStorage } from '../storage.js';
+import { useExtensionStorage } from '../composables/storage.js';
 
 const sites = useExtensionStorage('sites', []);
 const newSite = ref('');

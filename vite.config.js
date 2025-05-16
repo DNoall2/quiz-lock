@@ -9,6 +9,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'index.html'),
+        blocked: resolve(__dirname, 'blocked.html'),
       },
     },
     outdir: 'dist',

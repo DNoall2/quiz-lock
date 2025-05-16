@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue';
+import { ref, watch, toRaw } from 'vue';
 
 export function useExtensionStorage(key, defaultValue = []) {
   const data = ref(defaultValue);
@@ -21,7 +21,7 @@ export function useExtensionStorage(key, defaultValue = []) {
   // Watch and save on change
   watch(data, (newValue) => {
     if (isExtension) {
-      browser.storage.local.set({ [key]: newValue });
+      browser.storage.local.set({ [key]: toRaw(newValue) });
     } else {
       localStorage.setItem(key, JSON.stringify(newValue));
     }
