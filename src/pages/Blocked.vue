@@ -65,20 +65,20 @@ function checkAnswer(index) {
     result.value = null;
     return;
   }
-  
+
   const isCorrect = selectedAnswer.value === currentQuestion.value.answer;
   result.value = isCorrect;
-  
+
   if (isCorrect) {
-    browser.storage.local.get(['blockedUrl']).then((result) => {
+    browser.storage.local.get(['blockedUrl', 'temporarilyAllowed']).then((result) => {
       const targetUrl = result.blockedUrl;
+      const allowed = result.temporarilyAllowed || [];
       console.log(`[Blocked] Redirecting to:`, targetUrl);
-      if (targetUrl && targetUrl.startsWith('http')) {
-        browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-          const tabId = tabs[0].id;
-          browser.tabs.update(tabId, { url: targetUrl });
-        });
-      }
+
+      allowed.push(targetUrl);
+      browser.storage.local.set({ temporarilyAllowed: allowed }).then(() => {
+        window.location.href = targetUrl;
+      });
     });
   }
 }

@@ -8,30 +8,31 @@ browser.storage.onChanged.addListener((changes) => {
   if (changes.sites) {
     blockedSites = changes.sites.newValue || [];
   }
-})
+});
 
 browser.webRequest.onBeforeRequest.addListener(
-  function(details) {
-    const url = new URL(details.url);
-    browser.storage.local.set({ blockedUrl: url.href });
-    const isBlocked = blockedSites.some((site) => url.hostname.includes(site));
+  async function (details) {
+    const stored = await browser.storage.local.get(['temporarilyAllowed']);
+    const temporarilyAllowed = stored.temporarilyAllowed || [];
 
-    if (isBlocked) {
-      return { redirectUrl: browser.runtime.getURL('blocked.html') }
+    const url = new URL(details.url);
+    const domain = url.hostname;
+
+    const isBlocked = blockedSites.some((site) => domain.includes(site));
+    const isTemporarilyAllowed = temporarilyAllowed.some((site) => details.url.startsWith(site));
+    console.log(`[webRequest] Blocked: ${isBlocked}, Allowed: ${isTemporarilyAllowed}`);
+
+    if (isBlocked && !isTemporarilyAllowed) {
+      await browser.storage.local.set({ blockedUrl: details.url });
+      return { redirectUrl: browser.runtime.getURL('blocked.html') };
     }
+
+    return {};
   },
-  { urls: ['https://*/*'], types: ['main_frame'] },
-  ['blocking']
+  { urls: ['<all_urls>'], types: ['main_frame'] },
+  ['blocking'],
 );
 
 browser.browserAction.onClicked.addListener(() => {
   browser.tabs.create({ url: browser.runtime.getURL('index.html') });
-});
-
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'redirect-to-url') {
-    if (sender.tab && sender.tab.id) {
-      browser.tabs.update(sender.tab.id, { url: message.url });
-    }
-  }
 });
