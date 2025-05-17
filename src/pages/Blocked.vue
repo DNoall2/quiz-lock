@@ -9,7 +9,7 @@
       <ul v-if="currentAnswers.length">
         <li v-for="(choice, index) in currentAnswers" :key="index">
           <label>
-            <input type="radio" :value="choice" v-model="selectedAnswer" name="quiz-options" @change="checkAnswer"/>
+            <input type="radio" :value="choice" v-model="selectedAnswer" name="quiz-options" @change="checkAnswer" />
             {{ choice }}
           </label>
         </li>
@@ -18,7 +18,7 @@
       <p v-else>(Short Answer — type your response)</p>
 
       <p v-if="result !== null">
-        {{ result ? "Correct!" : "Incorrect. Try again." }}
+        {{ result ? 'Correct!' : 'Incorrect. Try again.' }}
       </p>
     </div>
   </div>
@@ -65,7 +65,22 @@ function checkAnswer(index) {
     result.value = null;
     return;
   }
-  result.value = selectedAnswer.value === currentQuestion.value.answer;
+  
+  const isCorrect = selectedAnswer.value === currentQuestion.value.answer;
+  result.value = isCorrect;
+  
+  if (isCorrect) {
+    browser.storage.local.get(['blockedUrl']).then((result) => {
+      const targetUrl = result.blockedUrl;
+      console.log(`[Blocked] Redirecting to:`, targetUrl);
+      if (targetUrl && targetUrl.startsWith('http')) {
+        browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+          const tabId = tabs[0].id;
+          browser.tabs.update(tabId, { url: targetUrl });
+        });
+      }
+    });
+  }
 }
 
 onMounted(() => {
