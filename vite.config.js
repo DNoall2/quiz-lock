@@ -13,20 +13,21 @@ export default defineConfig({
           dest: '.', // copies to root of dist/
         },
         {
-          src: 'blocked.html',
-          dest: '.', // optional if you want to move it out of dist/public
-        },
-        {
           src: 'src/background/background.js',
           dest: '.', // optional if you want to move it out of dist/public
-        }
+        },
       ],
     }),
   ],
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        blocked: path.resolve(__dirname, 'blocked.html'),
+      },
+    },
   },
   publicDir: false, // Disable Vite's default copying of public/
 });
-
