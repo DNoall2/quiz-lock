@@ -1,23 +1,49 @@
-// src/composables/useQuizStorage.js
-import { useExtensionStorage } from './storage.js';
+import { ref, watch, toRaw, reactive } from 'vue'; 
 import { v4 as uuidv4 } from 'uuid';
 
 export function useQuizStorage() {
-  const quizzes = useExtensionStorage('quizzes', []);
+  const quizzes = ref([]);
+
+  // Load from extension storage
+  if (typeof browser !== 'undefined' && browser.storage) {
+    browser.storage.local.get('quizzes').then((result) => {
+      console.log(`[quizzes]) Loaded from storage:`, result.quizzes);
+      if (result.quizzes) {
+        quizzes.value = result.quizzes;
+      }
+    });
+
+    // Watch and save on change
+    watch(quizzes, (newValue) => {
+      const raw = toRaw(newValue);
+      console.log(`[quizzes]) Saved to storage:`, raw);
+      browser.storage.local.set({ quizzes: toRaw(newValue) });
+    }, { deep: true });
+  }
 
   function importQuiz(data, name = 'Untitled Quiz') {
     const quiz = {
       id: uuidv4(),
       name,
       enabled: true,
-      data: JSON.parse(JSON.stringify(data)), // the actual quiz content
+      data: data.map(entry => {
+        if ('choices' in entry) {
+          return {
+            type: 'multiple',
+            question: entry.question,
+            answer: entry.answer,
+            choices: entry.choices,
+          };
+        } else {
+          return {
+            type: 'short',
+            question: entry.question,
+            answer: entry.answer,
+          };
+        }
+      })
     };
-    quizzes.value.push(quiz);
-  }
-
-  function toggleQuiz(id) {
-    const quiz = quizzes.value.find(q => q.id === id);
-    if (quiz) quiz.enabled = !quiz.enabled;
+    quizzes.value.push(reactive(quiz)); 
   }
 
   function deleteQuiz(id) {
@@ -28,8 +54,7 @@ export function useQuizStorage() {
   return {
     quizzes,
     importQuiz,
-    toggleQuiz,
-    deleteQuiz
+    deleteQuiz,
   };
 }
 
