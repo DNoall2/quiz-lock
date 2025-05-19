@@ -12,13 +12,21 @@ browser.storage.onChanged.addListener((changes) => {
 
 browser.webRequest.onBeforeRequest.addListener(
   async function (details) {
-    const stored = await browser.storage.local.get(['temporarilyAllowed']);
+    const [stored, sitesResult] = await Promise.all([
+      browser.storage.local.get(['temporarilyAllowed']),
+      browser.storage.local.get(['sites']),
+    ]);
+
     const temporarilyAllowed = stored.temporarilyAllowed || [];
+    const sites = sitesResult.sites || [];
 
     const url = new URL(details.url);
     const domain = url.hostname;
 
-    const isBlocked = blockedSites.some((site) => domain.includes(site));
+    const isBlocked = sites.some((site) => {
+      const siteObj = typeof site === 'string' ? { name: site, enabled: true } : site;
+      return siteObj.enabled !== false && domain.includes(siteObj.name);
+    });
     const isTemporarilyAllowed = temporarilyAllowed.some((site) => details.url.startsWith(site));
     console.log(`[webRequest] Blocked: ${isBlocked}, Allowed: ${isTemporarilyAllowed}`);
 

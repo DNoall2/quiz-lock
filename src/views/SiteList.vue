@@ -13,7 +13,7 @@
     <div>
       <ul>
         <li v-for="(site, index) in sites" :key="index">
-          <BlockedSite :site="site" @remove="removeSite(index)" :onUpdate="(newName) => updateSite(index, newName)" />
+          <BlockedSite :site="site" @remove="removeSite(index)" :onUpdate="(newSite) => updateSite(index, newSite)" />
         </li>
       </ul>
     </div>
@@ -31,7 +31,7 @@ const newSite = ref('');
 function addSite() {
   const trimmed = newSite.value.trim();
   if (trimmed) {
-    sites.value.push(trimmed);
+    sites.value.push({ name: trimmed, hours: 0, minutes: 1, enabled: true }); // default to 0 hours and 1 minute
     newSite.value = '';
   }
 }
@@ -40,8 +40,8 @@ function clearInput() {
   newSite.value = '';
 }
 
-function updateSite(index, newName) {
-  sites.value[index] = newName.trim();
+function updateSite(index, updatedSite) {
+  sites.value[index] = { ...sites.value[index], ...updatedSite }
 }
 
 function removeSite(index) {
