@@ -15,11 +15,17 @@
         </li>
       </ul>
 
-      <p v-else>(Short Answer — type your response)</p>
+      <div v-else>
+        <input type="text" v-model="selectedAnswer" placeholder="Enter your answer" @keyup.enter="checkAnswer" />
+        <button @click="checkAnswer">Check Answer</button>
+      </div>
 
       <p v-if="result !== null">
         {{ result ? 'Correct!' : 'Incorrect. Try again.' }}
       </p>
+    </div>
+    <div v-else>
+      <h2>No quizzes available</h2>
     </div>
   </div>
 </template>
@@ -66,7 +72,7 @@ function checkAnswer(index) {
     return;
   }
 
-  const isCorrect = selectedAnswer.value === currentQuestion.value.answer;
+  const isCorrect = selectedAnswer.value.toLowerCase() === currentQuestion.value.answer.toLowerCase();
   result.value = isCorrect;
 
   if (isCorrect) {
