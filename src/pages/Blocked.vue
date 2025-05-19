@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="blocked-page">
     <h1>Blocked</h1>
 
-    <button @click="pickRandomQuestion">Get Random Question</button>
+    <button :disabled="isNewQuestionButtonDisabled" @click="handleNewQuestion">
+      {{ isNewQuestionButtonDisabled ? `Wait ${newQuestionButtonCountdown} seconds` : 'New Question' }}
+    </button>
     <div v-if="currentQuestion">
       <h2>{{ currentQuestion.question }}</h2>
 
@@ -15,9 +17,11 @@
         </li>
       </ul>
 
-      <div v-else>
-        <input type="text" v-model="selectedAnswer" placeholder="Enter your answer" @keyup.enter="checkAnswer" />
-        <button @click="checkAnswer">Check Answer</button>
+      <div v-else class="short-answer-input">
+        <span>
+          <input type="text" v-model="selectedAnswer" placeholder="Enter your answer" @keyup.enter="checkAnswer" />
+          <button @click="checkAnswer">Check Answer</button>
+        </span>
       </div>
 
       <p v-if="result !== null">
@@ -31,15 +35,24 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useQuizStorage } from '../composables/quizStorage.js';
 
 const { quizzes } = useQuizStorage();
+
+watch(quizzes, (newVal) => {
+  if (newVal && newVal.length > 0) {
+    pickRandomQuestion();
+  }
+});
 
 const currentQuestion = ref(null);
 const currentAnswers = ref([]);
 const selectedAnswer = ref('');
 const result = ref(null);
+
+const isNewQuestionButtonDisabled = ref(false);
+const newQuestionButtonCountdown = ref(0);
 
 // computed list of enabled quizzes
 const enabledQuizzes = computed(() => quizzes.value.filter((q) => q.enabled));
@@ -89,9 +102,64 @@ function checkAnswer(index) {
   }
 }
 
-onMounted(() => {
+function handleNewQuestion() {
+  const waitTime = 5; // Change this to a user-defined wait time
   pickRandomQuestion();
+  isNewQuestionButtonDisabled.value = true;
+  newQuestionButtonCountdown.value = waitTime;
+
+  const interval = setInterval(() => {
+    newQuestionButtonCountdown.value -= 1;
+
+    if (newQuestionButtonCountdown.value <= 0) {
+      clearInterval(interval);
+      isNewQuestionButtonDisabled.value = false;
+    }
+  }, 1000);
+}
+
+onMounted(() => {
+  if (quizzes.value.length > 0) {
+    pickRandomQuestion();
+  }
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style>
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#app { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  background-color: #282828; 
+}                  
+</style>
+
+<style scoped>
+.blocked-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 75%;
+  width: 50%;
+  background-color: #343436;
+  border-radius: 0.5rem; 
+}
+
+.short-answer-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+</style>
