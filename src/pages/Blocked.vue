@@ -28,8 +28,13 @@
         {{ result ? 'Correct!' : 'Incorrect. Try again.' }}
       </p>
     </div>
+
     <div v-else>
       <h2>No quizzes available</h2>
+    </div>
+
+    <div class="unblock-timer">
+      <h2>Unblock in: {{ unblockTimer }}</h2>
     </div>
   </div>
 </template>
@@ -53,6 +58,7 @@ const result = ref(null);
 
 const isNewQuestionButtonDisabled = ref(false);
 const newQuestionButtonCountdown = ref(0);
+const unblockTimer = ref(0);
 
 // computed list of enabled quizzes
 const enabledQuizzes = computed(() => quizzes.value.filter((q) => q.enabled));
@@ -118,10 +124,36 @@ function handleNewQuestion() {
   }, 1000);
 }
 
+function startUnblockTimer() {
+  const waitTime = 60; // Change this to a user-defined wait time in settings
+  unblockTimer.value = waitTime;
+
+  const interval = setInterval(() => {
+    unblockTimer.value -= 1;
+
+    if (unblockTimer.value <= 0) {
+      clearInterval(interval);
+      unblockTimer.value = 0;
+
+      browser.storage.local.get(['blockedUrl', 'temporarilyAllowed']).then((result) => {
+        const targetUrl = result.blockedUrl;
+        const allowed = result.temporarilyAllowed || [];
+        console.log(`[Blocked] Redirecting to:`, targetUrl);
+
+        allowed.push(targetUrl);
+        browser.storage.local.set({ temporarilyAllowed: allowed }).then(() => {
+          window.location.href = targetUrl;
+        });
+      });
+    }
+  }, 1000);
+}
+
 onMounted(() => {
   if (quizzes.value.length > 0) {
     pickRandomQuestion();
   }
+  startUnblockTimer();
 });
 </script>
 
@@ -135,13 +167,13 @@ body,
   width: 100%;
 }
 
-#app { 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: center; 
-  background-color: #282828; 
-}                  
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #282828;
+}
 </style>
 
 <style scoped>
@@ -153,7 +185,7 @@ body,
   height: 75%;
   width: 50%;
   background-color: #343436;
-  border-radius: 0.5rem; 
+  border-radius: 0.5rem;
 }
 
 .short-answer-input {
