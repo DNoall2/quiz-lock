@@ -1,8 +1,10 @@
-<template>
+or: #444;
+  font-weight: 500;
+  <template>
   <nav class="navbar">
-    <router-link to="/">Site List</router-link>
-    <router-link to="/quizzes">Quiz List</router-link>
-    <router-link to="/settings">Settings</router-link>
+    <router-link to="/" class="nav-link" active-class="active-link">Site List</router-link>
+    <router-link to="/quizzes" class="nav-link" active-class="active-link">Quiz List</router-link>
+    <router-link to="/settings" class="nav-link" active-class="active-link">Settings</router-link>
   </nav>
 </template>
 
@@ -11,17 +13,36 @@
 </script>
 
 <style scoped>
-  
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background-color: #f2f2f2;
-  }
+.navbar {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 
-  .router-link-active {
-    font-weight: bold;
-  }
+.nav-link {
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: background-color 0.2s, color 0.2s;
+}
 
+.nav-link:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.active-link {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+}
 </style>

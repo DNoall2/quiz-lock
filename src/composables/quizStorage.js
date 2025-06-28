@@ -27,7 +27,7 @@ export function useQuizStorage() {
       name,
       enabled: true,
       data: data.map(entry => {
-        if ('choices' in entry) {
+        if ('choices' in entry && entry.choices.length > 0) {
           return {
             type: 'multiple',
             question: entry.question,

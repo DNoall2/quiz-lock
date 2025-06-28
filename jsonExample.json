@@ -1,0 +1,35 @@
+{
+  "quizzes": [
+    {
+      "tag": "Random Quizzes",
+      "enabled": true,
+      "questions": [
+        {
+          "question": "What is the powerhouse of the cell?",
+          "answer": "Mitochondria",
+          "choices": []
+        },
+        {
+          "question": "Hello",
+          "answer": "world",
+          "choices": []
+        }
+      ]
+    },
+    {
+      "tag": "Hello World",
+      "enabled": true,
+      "questions": [
+        {
+          "question": "Hello",
+          "answer": "world",
+          "choices": [
+            "world",
+            "sea",
+            "land"
+          ]
+        }
+      ]
+    }
+  ]
+}
