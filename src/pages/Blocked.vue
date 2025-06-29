@@ -19,7 +19,7 @@
 
       <div v-else class="short-answer-input">
         <span>
-          <input type="text" v-model="selectedAnswer" placeholder="Enter your answer" @keyup.enter="checkAnswer" />
+          <input type="text" v-model="selectedAnswer" placeholder="Enter your answer" @keyup.enter.prevent="checkAnswer" />
           <button @click="checkAnswer">Check Answer</button>
         </span>
       </div>
@@ -85,7 +85,7 @@ function pickRandomQuestion() {
   currentAnswers.value = question.choices || [];
 }
 
-function checkAnswer(index) {
+function checkAnswer() {
   if (!currentAnswers.value || !selectedAnswer.value) {
     result.value = null;
     return;
@@ -95,12 +95,18 @@ function checkAnswer(index) {
   result.value = isCorrect;
 
   if (isCorrect) {
-    browser.storage.local.get(['blockedUrl', 'temporarilyAllowed']).then((result) => {
+    browser.storage.local.get(['blockedUrl', 'temporarilyAllowed', 'sites']).then((result) => {
       const targetUrl = result.blockedUrl;
       const allowed = result.temporarilyAllowed || [];
+      const sites = result.sites || [];
       console.log(`[Blocked] Redirecting to:`, targetUrl);
+      
+      const domain = new URL(targetUrl).hostname;
+      const siteEntry = sites.find((site) => typeof site === 'object' && domain.includes(site.name));
+      const duration = (siteEntry.hours || 0) * 60 * 60 + (siteEntry.minutes || 0) * 60;
+      const expiresAt = Date.now() + duration * 1000;
 
-      allowed.push(targetUrl);
+      allowed.push({url: targetUrl, expiresAt});
       browser.storage.local.set({ temporarilyAllowed: allowed }).then(() => {
         window.location.href = targetUrl;
       });

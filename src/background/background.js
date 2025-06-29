@@ -1,4 +1,5 @@
 let blockedSites = [];
+let cleanupInterval = null;
 
 browser.storage.local.get('sites').then((result) => {
   blockedSites = result.sites || [];
@@ -9,6 +10,26 @@ browser.storage.onChanged.addListener((changes) => {
     blockedSites = changes.sites.newValue || [];
   }
 });
+
+function cleanExpiredSites() {
+  browser.storage.local.get('temporarilyAllowed').then((result) => {
+    const now = Date.now();
+    if (!Array.isArray(result.temporarilyAllowed)) return;
+
+    const updated = result.temporarilyAllowed.filter((entry) => {
+      return typeof entry === 'object' && entry.expiresAt > now;
+    });
+
+    if (updated.length !== result.temporarilyAllowed.length) {
+      browser.storage.local.set({ temporarilyAllowed: updated });
+    }
+  });
+}
+
+if (!cleanupInterval) {
+  cleanupInterval = setInterval(cleanExpiredSites, 60 * 1000);
+}
+
 
 browser.webRequest.onBeforeRequest.addListener(
   async function (details) {
@@ -27,8 +48,10 @@ browser.webRequest.onBeforeRequest.addListener(
       const siteObj = typeof site === 'string' ? { name: site, enabled: true } : site;
       return siteObj.enabled !== false && domain.includes(siteObj.name);
     });
-    const isTemporarilyAllowed = temporarilyAllowed.some((site) => details.url.startsWith(site));
-    console.log(`[webRequest] Blocked: ${isBlocked}, Allowed: ${isTemporarilyAllowed}`);
+    
+    const isTemporarilyAllowed = temporarilyAllowed.some((site) => {
+      return typeof site === 'object' && details.url.startsWith(site.url) && site.expiresAt > Date.now();
+    });
 
     if (isBlocked && !isTemporarilyAllowed) {
       await browser.storage.local.set({ blockedUrl: details.url });
