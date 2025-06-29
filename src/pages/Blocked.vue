@@ -177,21 +177,120 @@ body,
 </style>
 
 <style scoped>
+
 .blocked-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 75%;
-  width: 50%;
-  background-color: #343436;
-  border-radius: 0.5rem;
+  background: #1e1e1e;
+  color: #f0f0f0;
+  max-width: 600px;
+  width: 90%;
+  margin: 3rem auto;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.35);
+  font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
-.short-answer-input {
+.blocked-page h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.blocked-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #dddddd;
+}
+
+.blocked-page button {
+  background-color: #4a90e2;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: background-color 0.2s;
+}
+
+.blocked-page button:hover:enabled {
+  background-color: #3b7dd8;
+}
+
+.blocked-page button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+li {
+  margin: 0.5rem 0;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #2c2c2e;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+label:hover {
+  background: #3c3c3f;
+}
+
+input[type="radio"] {
+  accent-color: #4a90e2;
+}
+
+.short-answer-input input[type="text"] {
+  padding: 0.5rem;
+  width: 100%;
+  border-radius: 6px;
+  border: none;
+  background-color: #2c2c2e;
+  color: #f0f0f0;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+
+.short-answer-input button {
+  margin-top: 0.5rem;
+}
+
+.short-answer-input span {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+}
+
+p {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #6ad76a;
+}
+
+p:has(+ input[type="radio"]:checked):not(:has(+ input[value='{{ currentQuestion.answer }}']:checked)) {
+  color: #e56a6a;
+}
+
+.unblock-timer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #2a2a2d;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  color: #ccc;
 }
 </style>

@@ -49,4 +49,85 @@ function removeSite(index) {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.site-list {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.site-list h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+/* Input row */
+.site-list > div:nth-child(2) {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.site-list input[type="text"] {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+}
+
+.site-list input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Buttons */
+.site-list button {
+  background-color: #007bff;
+  color: white;
+  padding: 0.5rem 0.9rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.site-list button:hover {
+  background-color: #0056b3;
+}
+
+.site-list button:nth-child(3) {
+  background-color: #6c757d;
+}
+
+.site-list button:nth-child(3):hover {
+  background-color: #5a6268;
+}
+
+/* List of sites */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.2s;
+}
+
+li:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+</style>
