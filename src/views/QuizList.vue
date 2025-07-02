@@ -186,6 +186,11 @@ form {
   gap: 1.0rem;
 }
 
+form button {
+  position: sticky;
+  bottom: 0;
+}
+
 form label {
   display: block;
   font-weight: 500;

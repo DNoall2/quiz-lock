@@ -3,8 +3,13 @@
     <h1>Blocked</h1>
 
     <button :disabled="isNewQuestionButtonDisabled" @click="handleNewQuestion">
-      {{ isNewQuestionButtonDisabled ? `Wait ${newQuestionButtonCountdown} seconds` : 'New Question' }}
+      {{
+        isNewQuestionButtonDisabled
+          ? `Wait ${newQuestionButtonCountdown} seconds`
+          : "New Question"
+      }}
     </button>
+    <button @click="openInObsidian">View in Obsidian</button>
     <div v-if="currentQuestion">
       <h2>{{ currentQuestion.question }}</h2>
 
@@ -19,13 +24,14 @@
 
       <div v-else class="short-answer-input">
         <span>
-          <input type="text" v-model="selectedAnswer" placeholder="Enter your answer" @keyup.enter.prevent="checkAnswer" />
+          <input type="text" v-model="selectedAnswer" placeholder="Enter your answer"
+            @keyup.enter.prevent="checkAnswer" />
           <button @click="checkAnswer">Check Answer</button>
         </span>
       </div>
 
       <p v-if="result !== null">
-        {{ result ? 'Correct!' : 'Incorrect. Try again.' }}
+        {{ result ? "Correct!" : "Incorrect. Try again." }}
       </p>
     </div>
 
@@ -40,10 +46,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import { useQuizStorage } from '../composables/quizStorage.js';
+import { ref, computed, onMounted, watch } from "vue";
+import { useQuizStorage } from "../composables/quizStorage.js";
+import { useSettingsStorage } from "../composables/settingsStorage.js";
 
 const { quizzes } = useQuizStorage();
+const { settings, settingsReady } = useSettingsStorage();
+
+watch(settingsReady, (ready) => {
+  if (ready) startUnblockTimer();
+});
 
 watch(quizzes, (newVal) => {
   if (newVal && newVal.length > 0) {
@@ -53,12 +65,15 @@ watch(quizzes, (newVal) => {
 
 const currentQuestion = ref(null);
 const currentAnswers = ref([]);
-const selectedAnswer = ref('');
+const selectedAnswer = ref("");
 const result = ref(null);
 
 const isNewQuestionButtonDisabled = ref(false);
 const newQuestionButtonCountdown = ref(0);
 const unblockTimer = ref(0);
+
+const correctAnswersCount = ref(0);
+const askedQuestions = ref([]);
 
 // computed list of enabled quizzes
 const enabledQuizzes = computed(() => quizzes.value.filter((q) => q.enabled));
@@ -71,18 +86,41 @@ function pickRandomQuestion() {
     return;
   }
 
-  const quiz = enabledQuizzes.value[Math.floor(Math.random() * enabledQuizzes.value.length)];
+  const eligableQuizzes = enabledQuizzes.value.filter((quiz) => quiz.data?.some(q => !askedQuestions.value.includes(q.question)));
 
-  if (!quiz.data || quiz.data.length === 0) {
+  if (eligableQuizzes.length === 0) {
+    console.log(`[Blocked] No quizzes with unasked questions found`);
     currentQuestion.value = null;
     currentAnswers.value = [];
     return;
   }
 
-  const question = quiz.data[Math.floor(Math.random() * quiz.data.length)];
+  const quiz =
+    eligableQuizzes[
+    Math.floor(Math.random() * eligableQuizzes.length)
+    ];
+
+
+  const unaskedQuestions = quiz.data.filter((q) => !askedQuestions.value.includes(q.question));
+  if (unaskedQuestions.length === 0) {
+    console.log(`[Blocked] No unasked questions found for quiz ${quiz.name}`);
+    askedQuestions.value = []; // Reset asked questions
+    return;
+  }
+
+  const question = unaskedQuestions[Math.floor(Math.random() * unaskedQuestions.length)];
+  askedQuestions.value.push(question.question);
 
   currentQuestion.value = question;
   currentAnswers.value = question.choices || [];
+}
+
+function openInObsidian() {
+  const vault = "CodexArcana";
+  const file = currentQuestion.value.file;
+  console.log(`[Blocked] Opening ${file} in Obsidian`);
+  const uri = `obsidian://open?vault=${encodeURIComponent(vault)}&file=${encodeURIComponent(file)}`;
+  window.location.href = uri;
 }
 
 function checkAnswer() {
@@ -91,31 +129,48 @@ function checkAnswer() {
     return;
   }
 
-  const isCorrect = selectedAnswer.value.toLowerCase() === currentQuestion.value.answer.toLowerCase();
+  const isCorrect =
+    selectedAnswer.value.toLowerCase() ===
+    currentQuestion.value.answer.toLowerCase();
   result.value = isCorrect;
 
   if (isCorrect) {
-    browser.storage.local.get(['blockedUrl', 'temporarilyAllowed', 'sites']).then((result) => {
-      const targetUrl = result.blockedUrl;
-      const allowed = result.temporarilyAllowed || [];
-      const sites = result.sites || [];
-      console.log(`[Blocked] Redirecting to:`, targetUrl);
-      
-      const domain = new URL(targetUrl).hostname;
-      const siteEntry = sites.find((site) => typeof site === 'object' && domain.includes(site.name));
-      const duration = (siteEntry.hours || 0) * 60 * 60 + (siteEntry.minutes || 0) * 60;
-      const expiresAt = Date.now() + duration * 1000;
+    correctAnswersCount.value += 1;
 
-      allowed.push({url: targetUrl, expiresAt});
-      browser.storage.local.set({ temporarilyAllowed: allowed }).then(() => {
-        window.location.href = targetUrl;
-      });
-    });
+    const requiredNumberOfCorrectAnswers = settings.value.numberOfQuestions;
+    if (correctAnswersCount.value >= requiredNumberOfCorrectAnswers) {
+      browser.storage.local
+        .get(["blockedUrl", "temporarilyAllowed", "sites"])
+        .then((result) => {
+          const targetUrl = result.blockedUrl;
+          const allowed = result.temporarilyAllowed || [];
+          const sites = result.sites || [];
+          console.log(`[Blocked] Redirecting to:`, targetUrl);
+
+          const domain = new URL(targetUrl).hostname;
+          const siteEntry = sites.find(
+            (site) => typeof site === "object" && domain.includes(site.name),
+          );
+          const duration =
+            (siteEntry.hours || 0) * 60 * 60 + (siteEntry.minutes || 0) * 60;
+          const expiresAt = Date.now() + duration * 1000;
+
+          allowed.push({ url: targetUrl, expiresAt });
+          browser.storage.local
+            .set({ temporarilyAllowed: allowed })
+            .then(() => {
+              window.location.href = targetUrl;
+            });
+        });
+    } else {
+      selectedAnswer.value = "";
+      pickRandomQuestion();
+    }
   }
 }
 
 function handleNewQuestion() {
-  const waitTime = 5; // Change this to a user-defined wait time
+  const waitTime = settings.value.newQuestionButtonCountdownSeconds;
   pickRandomQuestion();
   isNewQuestionButtonDisabled.value = true;
   newQuestionButtonCountdown.value = waitTime;
@@ -131,8 +186,11 @@ function handleNewQuestion() {
 }
 
 function startUnblockTimer() {
-  const waitTime = 60; // Change this to a user-defined wait time in settings
+  const waitTime = settings.value.unblockDurationMinutes * 60; // Change this to a user-defined wait time in settings
   unblockTimer.value = waitTime;
+  console.log(
+    `[Blocked] Unblock timer started with wait time: ${waitTime} seconds`,
+  );
 
   const interval = setInterval(() => {
     unblockTimer.value -= 1;
@@ -141,25 +199,31 @@ function startUnblockTimer() {
       clearInterval(interval);
       unblockTimer.value = 0;
 
-      browser.storage.local.get(['blockedUrl', 'temporarilyAllowed']).then((result) => {
-        const targetUrl = result.blockedUrl;
-        const allowed = result.temporarilyAllowed || [];
-        console.log(`[Blocked] Redirecting to:`, targetUrl);
+      browser.storage.local
+        .get(["blockedUrl", "temporarilyAllowed"])
+        .then((result) => {
+          const targetUrl = result.blockedUrl;
+          const allowed = result.temporarilyAllowed || [];
+          console.log(`[Blocked] Redirecting to:`, targetUrl);
 
-        allowed.push(targetUrl);
-        browser.storage.local.set({ temporarilyAllowed: allowed }).then(() => {
-          window.location.href = targetUrl;
+          allowed.push(targetUrl);
+          browser.storage.local
+            .set({ temporarilyAllowed: allowed })
+            .then(() => {
+              window.location.href = targetUrl;
+            });
         });
-      });
     }
   }, 1000);
 }
 
 onMounted(() => {
+  correctAnswersCount.value = 0;
+  askedQuestions.value = [];
   if (quizzes.value.length > 0) {
     pickRandomQuestion();
   }
-  startUnblockTimer();
+  //startUnblockTimer();
 });
 </script>
 
@@ -183,7 +247,6 @@ body,
 </style>
 
 <style scoped>
-
 .blocked-page {
   background: #1e1e1e;
   color: #f0f0f0;
@@ -193,7 +256,7 @@ body,
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.35);
-  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-family: "Segoe UI", Roboto, sans-serif;
 }
 
 .blocked-page h1 {
@@ -269,7 +332,6 @@ input[type="radio"] {
   margin-bottom: 1rem;
 }
 
-
 .short-answer-input button {
   margin-top: 0.5rem;
 }
@@ -287,7 +349,7 @@ p {
   color: #6ad76a;
 }
 
-p:has(+ input[type="radio"]:checked):not(:has(+ input[value='{{ currentQuestion.answer }}']:checked)) {
+p:has(+ input[type="radio"]:checked):not( :has(+ input[value="{{ currentQuestion.answer }}"]:checked)) {
   color: #e56a6a;
 }
 

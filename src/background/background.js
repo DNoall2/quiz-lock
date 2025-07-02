@@ -30,6 +30,13 @@ if (!cleanupInterval) {
   cleanupInterval = setInterval(cleanExpiredSites, 60 * 1000);
 }
 
+function matchesBlockedDomain(hostname, blockedName) {
+  const cleanBlocked = blockedName.replace(/^https?:\/\//, '').replace(/^www\./, '').toLowerCase();
+  return (
+    hostname === cleanBlocked ||
+    hostname.endsWith('.' + cleanBlocked)
+  );
+}
 
 browser.webRequest.onBeforeRequest.addListener(
   async function (details) {
@@ -46,7 +53,8 @@ browser.webRequest.onBeforeRequest.addListener(
 
     const isBlocked = sites.some((site) => {
       const siteObj = typeof site === 'string' ? { name: site, enabled: true } : site;
-      return siteObj.enabled !== false && domain.includes(siteObj.name);
+      if (!siteObj.enabled) return false;
+      return matchesBlockedDomain(domain.toLowerCase(), siteObj.name);
     });
     
     const isTemporarilyAllowed = temporarilyAllowed.some((site) => {
