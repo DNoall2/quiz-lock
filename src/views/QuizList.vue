@@ -9,25 +9,40 @@
           <input type="checkbox" v-model="quiz.enabled" />
           {{ quiz.name }}
         </label>
-        <button @click="editQuiz(quiz)">Edit</button>
+        <span>
+          <button @click="editQuiz(quiz)" class="edit-quiz-button">Edit</button>
+          <button @click="deleteQuiz(quiz.id)" class="delete-quiz-button">Delete</button>
+        </span>
       </li>
     </ul>
 
-    <dialog ref="editDialog" v-if="selectedQuiz"> 
+    <dialog ref="editDialog" v-if="selectedQuiz">
       <h2>Edit Quiz: {{ selectedQuiz.name }}</h2>
       <form method="dialog">
         <div v-for="(question, index) in selectedQuiz.data" :key="index">
-          <label>Question:
+          <label
+            >Question:
             <textarea v-model="question.question" rows="1" @input="autoGrow($event)" />
           </label>
           <br />
-          <label>Answer:
-            <textarea v-model="question.answer" rows="1" @input="autoGrow($event)"/> 
+          <label
+            >Answer:
+            <textarea v-model="question.answer" rows="1" @input="autoGrow($event)" />
           </label>
           <br />
           <div v-if="question.type === 'multiple'">
-            <label>Choices (comma-separated):
-              <textarea :value="question.choices.join(', ')" @input="updateChoices($event.target.value, question)" rows="2" />
+            <label
+              >Choices (comma-separated):
+              <textarea
+                v-model="question._choicesString"
+                @input="
+                  (e) => {
+                    updateChoices(question);
+                    autoGrow(e);
+                  }
+                "
+                rows="1"
+              />
             </label>
           </div>
           <hr />
@@ -39,8 +54,8 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue";
-import { useQuizStorage } from "../composables/quizStorage.js";
+import { ref, nextTick } from 'vue';
+import { useQuizStorage } from '../composables/quizStorage.js';
 
 const { quizzes, importQuiz, deleteQuiz } = useQuizStorage();
 const editDialog = ref(null);
@@ -60,11 +75,11 @@ function handleImport(event) {
       if (content.quizzes && Array.isArray(content.quizzes)) {
         content.quizzes.forEach((quiz) => {
           if (quiz.questions && Array.isArray(quiz.questions)) {
-            importQuiz(quiz.questions, quiz.tag || "Untitled Quiz");
+            importQuiz(quiz.questions, quiz.tag || 'Untitled Quiz');
           }
         });
       } else {
-        console.error("Invalid quiz format");
+        console.error('Invalid quiz format');
       }
     } catch (error) {
       console.error(error);
@@ -78,16 +93,35 @@ function handleImport(event) {
 
 function editQuiz(quiz) {
   selectedQuiz.value = quiz;
-  nextTick(() => { editDialog.value?.showModal(); }); 
+  selectedQuiz.value.data.forEach((q) => {
+    q._choicesString = Array.isArray(q.choices) ? q.choices.join(', ') : '';
+  });
+
+  nextTick(() => {
+    editDialog.value?.showModal();
+    growTextArea();
+  });
 }
 
-function updateChoices(value, question) {
-  question.choices = value.split(",").map((choice) => choice.trim());
+function updateChoices(question) {
+  question.choices = question._choicesString
+    .split(', ')
+    .map((choice) => choice.trim())
+    .filter(Boolean);
 }
 
-function autoGrow(event) { 
-  event.target.style.height = "auto"; 
-  event.target.style.height = `${event.target.scrollHeight}px`; 
+function autoGrow(event) {
+  event.target.style.height = 'auto';
+  event.target.style.height = `${event.target.scrollHeight}px`;
+}
+
+function growTextArea() {
+  const textareas = document.querySelectorAll('textarea');
+
+  textareas.forEach((el) => {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  });
 }
 </script>
 
@@ -111,7 +145,7 @@ h1 {
 }
 
 /* File input */
-input[type="file"] {
+input[type='file'] {
   margin-bottom: 1.5rem;
 }
 
@@ -145,6 +179,13 @@ label {
   font-weight: 500;
 }
 
+span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
 /* Buttons */
 button {
   background-color: #007bff;
@@ -157,7 +198,15 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #006999;
+}
+
+.delete-quiz-button {
+  background-color: red;
+}
+
+.delete-quiz-button:hover {
+  background-color: darkred;
 }
 
 /* MODAL (dialog) */
@@ -183,12 +232,16 @@ dialog h2 {
 form {
   display: flex;
   flex-direction: column;
-  gap: 1.0rem;
+  gap: 1rem;
 }
 
 form button {
   position: sticky;
   bottom: 0;
+}
+
+form button:hover {
+  background-color: #006999
 }
 
 form label {
@@ -206,15 +259,15 @@ form input {
   font-size: 1rem;
 }
 
-form textarea { 
+form textarea {
   width: 90%;
   padding: 0.5rem;
-  border: 1px solid #ccc; 
-  border-radius: 6px; 
-  font-size: 1rem; 
-  resize: vertical; 
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  resize: vertical;
   min-height: 1rem;
-  line-height: 1.5; 
+  line-height: 1.5;
 }
 
 /* Choice input inside modal */
@@ -232,7 +285,7 @@ form hr {
 }
 
 /* Save button inside modal */
-form button[type="submit"] {
+form button[type='submit'] {
   align-self: flex-end;
   margin-top: 1rem;
 }

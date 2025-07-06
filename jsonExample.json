@@ -34,6 +34,23 @@
           "file": "Codex/Computer Graphics/Lighting/Lighting Maps.md"
         }
       ]
+    },
+    {
+      "tag": "Test",
+      "enabled" : true,
+      "questions": [
+        {
+          "question": "Test Multiple Choice",
+          "answer": "Test Me",
+          "choices": [
+            "Test 1",
+            "Test 2",
+            "Test 3",
+            "Test 4"
+          ],
+          "file": "File"
+        }
+      ]
     }
   ]
 }
