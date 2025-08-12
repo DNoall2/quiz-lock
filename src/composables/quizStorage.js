@@ -32,6 +32,7 @@ export function useQuizStorage() {
         question: entry.question,
         answer: entry.answer,
         choices: entry.choices || [],
+        origin: entry.origin,
       };
     });
     // check for duplicates

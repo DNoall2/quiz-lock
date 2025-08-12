@@ -3,8 +3,21 @@
     <h1>Quiz List</h1>
     <input type="file" @change="handleImport" accept=".json" />
 
+    <h4>Obsidian Quizzes</h4>
     <ul>
-      <li v-for="quiz in quizzes" :key="quiz.id">
+      <li v-for="quiz in quizzes" v-if="quiz.origin === 'obsidian'" :key="quiz.id">
+        <label>
+          <input type="checkbox" v-model="quiz.enabled" />
+          {{ quiz.name }}
+        </label>
+        <button @click="editQuiz(quiz)">Edit</button>
+      </li>
+    </ul>
+
+    <hr />
+    <h4>Local Quizzes</h4>
+    <ul>
+      <li v-for="quiz in quizzes" v-if="quiz.origin === 'local'" :key="quiz.id">
         <label>
           <input type="checkbox" v-model="quiz.enabled" />
           {{ quiz.name }}

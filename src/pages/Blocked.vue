@@ -186,7 +186,7 @@ function handleNewQuestion() {
 }
 
 function startUnblockTimer() {
-  const waitTime = settings.value.unblockDurationMinutes * 60; // Change this to a user-defined wait time in settings
+  const waitTime = settings.value.unblockDurationMinutes * 60;
   unblockTimer.value = waitTime;
   console.log(
     `[Blocked] Unblock timer started with wait time: ${waitTime} seconds`,
@@ -223,7 +223,6 @@ onMounted(() => {
   if (quizzes.value.length > 0) {
     pickRandomQuestion();
   }
-  //startUnblockTimer();
 });
 </script>
 

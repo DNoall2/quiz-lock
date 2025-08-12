@@ -1,6 +1,7 @@
 import { ref, watch, toRaw } from "vue";
 
 const defaultSettings = {
+  accentColor: "#d65d0e",
   unblockDurationMinutes: 1,
   newQuestionButtonCountdownSeconds: 5,
   numberOfQuestions: 1,
