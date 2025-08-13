@@ -100,7 +100,8 @@ function removeSite(index) {
 }
 
 .site-list button:hover {
-  background-color: var(--accent-color-shade);
+  transition: 0.3s;
+  filter: brightness(85%);
 }
 
 .site-list button:nth-child(3) {

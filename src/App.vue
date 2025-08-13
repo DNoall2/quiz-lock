@@ -79,5 +79,7 @@ watch(() => settings.value.themeMode, (isDark) => {
 body {
   background-color: var(--background-color);
   color: var(--text-color);
+  padding: 0;
+  margin: 0;
 }
 </style>
