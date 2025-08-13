@@ -89,7 +89,7 @@ function cancelEdit() {
 }
 
 .edit-popup {
-  background: white;
+  background: var(--background-highlight);
   padding: 1rem;
   border-radius: 0.5rem;
   width: 30rem;

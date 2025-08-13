@@ -145,7 +145,7 @@ div {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background-color: #fafafa;
+  background-color: var(--background-color);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
@@ -170,8 +170,8 @@ ul {
 }
 
 li {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: var(--background-color);
+  border: 1px solid var(--background-highlight);
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 8px;
@@ -201,7 +201,7 @@ span {
 
 /* Buttons */
 button {
-  background-color: #007bff;
+  background-color: var(--accent-color);
   color: white;
   border: none;
   padding: 0.4rem 0.8rem;
@@ -211,7 +211,7 @@ button {
 }
 
 button:hover {
-  background-color: #006999;
+  background-color: var(--accent-color-shade);
 }
 
 .delete-quiz-button {
@@ -230,14 +230,14 @@ dialog {
   padding: 1.5rem;
   border: none;
   border-radius: 12px;
-  background: #fff;
+  background: var(--background-highlight);
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
 }
 
 dialog h2 {
   margin-top: 0;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-color);
   margin-bottom: 1rem;
 }
 
@@ -254,20 +254,20 @@ form button {
 }
 
 form button:hover {
-  background-color: #006999
+  background-color: var(--accent-color-shade)
 }
 
 form label {
   display: block;
   font-weight: 500;
   margin-bottom: 0.25rem;
-  color: #444;
+  color: var(--text-color);
 }
 
 form input {
   width: 90%;
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--background-highlight);
   border-radius: 6px;
   font-size: 1rem;
 }
@@ -275,7 +275,7 @@ form input {
 form textarea {
   width: 90%;
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--background-highlight);
   border-radius: 6px;
   font-size: 1rem;
   resize: vertical;
@@ -285,15 +285,15 @@ form textarea {
 
 /* Choice input inside modal */
 form > div {
-  background-color: #f7f7f7;
+  background-color: var(--background-color);
   padding: 1rem;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--background-highlight);
 }
 
 form hr {
   border: none;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--background-highlight);
   margin: 0.5rem 0;
 }
 

@@ -11,36 +11,73 @@
 </template>
 
 <script setup>
-import NavBar from './components/NavBar.vue'
+import { watch, onMounted } from 'vue';
+import NavBar from './components/NavBar.vue';
+import { useSettingsStorage } from './composables/settingsStorage.js';
+
+const { settings } = useSettingsStorage();
+
+watch(() => settings.value.accentColor, (newValue) => {
+  document.documentElement.style.setProperty('--accent-color', newValue);
+}, { immediate: true });
+
+watch(() => settings.value.themeMode, (isDark) => {
+  document.documentElement.classList.toggle('dark', isDark);
+}, { immediate: true });
+
+/* onMounted(() => {
+  if (settings.value.themeMode) {
+    document.documentElement.classList.add('dark');
+  }
+}); */
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
 
-
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
-
 </style>
 <style>
 :root {
-  --color-background-light: #fff;
-  --color-background-highlight-light: #f5f5f5;
+  --background-color: #fff;
+  --background-highlight: #f0f0f0;
 
-  --color-background-dark: #504945;
-  --color-background-highlight-dark: #665c54;
+  --text-color: #333;
 
-  --color-accent: #d65d0e;
-  --color-accent-dark: #b94c0a;
-  --color-accent-light: #e8a400;
+  --accent-color: #d65d0e;
+  --accent-color-shade: #b94c0a;
+  --accent-color-highlight: #e8a400;
 
-  --color-success: #4caf50;
-  --color-warning: #ff9800;
-  --color-error: #f44336;
-  --color-info: #00bcd4;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+  --info-color: #00bcd4;
 }
 
+:root.dark {
+  --background-color: #282828;
+  --background-highlight: #32302f;
+
+  --text-color: #f0f0f0;
+
+  --accent-color: #d65d0e;
+  --accent-color-shade: #b94c0a;
+  --accent-color-highlight: #e8a400;
+
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+  --info-color: #00bcd4;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
 </style>

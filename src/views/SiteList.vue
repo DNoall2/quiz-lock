@@ -54,7 +54,7 @@ function removeSite(index) {
   max-width: 800px;
   margin: 2rem auto;
   padding: 2rem;
-  background: #ffffff;
+  background: var(--background-color);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   font-family: 'Segoe UI', Roboto, sans-serif;
@@ -62,7 +62,7 @@ function removeSite(index) {
 
 .site-list h1 {
   font-size: 2rem;
-  color: #333;
+  color: var(--text-color);
   margin-bottom: 1.5rem;
 }
 
@@ -77,19 +77,19 @@ function removeSite(index) {
   flex: 1;
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--background-highlight);
   border-radius: 6px;
   transition: border-color 0.2s;
 }
 
 .site-list input[type="text"]:focus {
-  border-color: #007bff;
+  border-color: var(--accent-color);
   outline: none;
 }
 
 /* Buttons */
 .site-list button {
-  background-color: #007bff;
+  background-color: var(--accent-color);
   color: white;
   padding: 0.5rem 0.9rem;
   border: none;
@@ -100,7 +100,7 @@ function removeSite(index) {
 }
 
 .site-list button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-color-shade);
 }
 
 .site-list button:nth-child(3) {
@@ -119,11 +119,11 @@ ul {
 }
 
 li {
-  background-color: #f9f9f9;
+  background-color: var(--background-highlight);
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--accent-color);
   transition: box-shadow 0.2s;
 }
 
