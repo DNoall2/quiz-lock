@@ -5,7 +5,11 @@
     </div>
 
     <div>
-      <input v-model="newSite" type="text" />
+      <p v-if="siteAlreadyExists" class="exists-warning">This site already exists in your list!</p>
+    </div>
+
+    <div>
+      <input v-model="newSite" type="text" id="site-input" @click="handleSiteExistsText" />
       <button @click="addSite">Add</button>
       <button @click="clearInput">Clear</button>
     </div>
@@ -28,11 +32,22 @@ import { useExtensionStorage } from '../composables/storage.js';
 const sites = useExtensionStorage('sites', []);
 const newSite = ref('');
 
+const siteAlreadyExists = ref(false);
+
+function handleSiteExistsText() {
+  if (siteAlreadyExists.value === true) {
+    siteAlreadyExists.value = false;
+  }
+}
+
 function addSite() {
   const trimmed = newSite.value.trim();
-  if (trimmed) {
+  const exists = sites.value.some((site) => site.name.toLowerCase().includes(trimmed));
+  if (trimmed && !exists) {
     sites.value.push({ name: trimmed, hours: 0, minutes: 1, enabled: true }); // default to 0 hours and 1 minute
     newSite.value = '';
+  } else {
+    siteAlreadyExists.value = true;
   }
 }
 
@@ -41,7 +56,7 @@ function clearInput() {
 }
 
 function updateSite(index, updatedSite) {
-  sites.value[index] = { ...sites.value[index], ...updatedSite }
+  sites.value[index] = { ...sites.value[index], ...updatedSite };
 }
 
 function removeSite(index) {
@@ -67,13 +82,13 @@ function removeSite(index) {
 }
 
 /* Input row */
-.site-list > div:nth-child(2) {
+.site-list > div:nth-child(3) {
   display: flex;
   gap: 0.75rem;
   margin-bottom: 2rem;
 }
 
-.site-list input[type="text"] {
+.site-list input[type='text'] {
   flex: 1;
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
@@ -82,7 +97,7 @@ function removeSite(index) {
   transition: border-color 0.2s;
 }
 
-.site-list input[type="text"]:focus {
+.site-list input[type='text']:focus {
   border-color: var(--accent-color);
   outline: none;
 }
