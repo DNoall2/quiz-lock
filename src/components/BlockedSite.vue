@@ -1,8 +1,10 @@
 <template>
-  <span>
+  <span class="site">
     {{ props.site.name }}
-    <button @click="editing = true" v-if="!editing">Edit</button>
-    <button @click="emit('remove')">Remove</button>
+    <div class="site-buttons">
+    <button class="material-symbols-outlined" @click="editing = true">edit</button>
+    <button class="material-symbols-outlined" @click="emit('remove')">delete</button>
+    </div>
   </span>
 
   <div v-if="editing" class="edit-popup-overlay">
@@ -75,6 +77,36 @@ function cancelEdit() {
 </script>
 
 <style scoped>
+
+.site {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+
+.site-buttons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.site-buttons button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 0 10px;
+}
+
+.site-buttons button:nth-child(2) {
+  background-color: var(--error-color);
+}
+
+.site-buttons button:hover {
+  transition: 0.3s;
+  filter: brightness(85%);
+}
 
 .edit-popup-overlay {
   position: fixed;
