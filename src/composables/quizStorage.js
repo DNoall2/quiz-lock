@@ -25,14 +25,13 @@ export function useQuizStorage() {
     );
   }
 
-  function importQuiz(data, name = "Untitled Quiz") {
+  function importQuiz(data, name = "Untitled Quiz", origin = 'obsidian') {
     const newQuestions = data.map((entry) => {
       return {
         type: entry.choices && entry.choices.length > 0 ? "multiple" : "short",
         question: entry.question,
         answer: entry.answer,
         choices: entry.choices || [],
-        origin: entry.origin,
       };
     });
     // check for duplicates
@@ -52,6 +51,7 @@ export function useQuizStorage() {
         id: uuidv4(),
         name,
         enabled: true,
+        origin,
         data: newQuestions,
       };
       quizzes.value.push(reactive(newQuiz));

@@ -5,7 +5,7 @@
 
     <h4>Obsidian Quizzes</h4>
     <ul>
-      <li v-for="quiz in quizzes" v-if="quiz.origin === 'obsidian'" :key="quiz.id">
+      <li v-for="quiz in quizzes.filter(q => q.origin === 'obsidian')" :key="quiz.id">
         <label>
           <input type="checkbox" v-model="quiz.enabled" />
           {{ quiz.name }}
@@ -17,7 +17,7 @@
     <hr />
     <h4>Local Quizzes</h4>
     <ul>
-      <li v-for="quiz in quizzes" v-if="quiz.origin === 'local'" :key="quiz.id">
+      <li v-for="quiz in quizzes.filter(q => q.origin === 'local')" :key="quiz.id">
         <label>
           <input type="checkbox" v-model="quiz.enabled" />
           {{ quiz.name }}
@@ -88,7 +88,7 @@ function handleImport(event) {
       if (content.quizzes && Array.isArray(content.quizzes)) {
         content.quizzes.forEach((quiz) => {
           if (quiz.questions && Array.isArray(quiz.questions)) {
-            importQuiz(quiz.questions, quiz.tag || 'Untitled Quiz');
+            importQuiz(quiz.questions, quiz.tag || 'Untitled Quiz', quiz.origin || 'obsidian');
           }
         });
       } else {
@@ -154,7 +154,7 @@ div {
 h1 {
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: #333;
+  color: var(--text-color);
 }
 
 /* File input */
@@ -215,11 +215,12 @@ button:hover {
 }
 
 .delete-quiz-button {
-  background-color: red;
+  background-color: var(--error-color);
 }
 
 .delete-quiz-button:hover {
-  background-color: darkred;
+  transition: 0.3s;
+  filter: brightness(85%);
 }
 
 /* MODAL (dialog) */
