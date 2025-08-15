@@ -39,7 +39,7 @@
       <h2>No quizzes available</h2>
     </div>
 
-    <div class="unblock-timer">
+    <div class="unblock-timer" v-if="settings.unblockTimerToggle">
       <h2>Unblock in: {{ unblockTimer }}</h2>
     </div>
   </div>
@@ -54,7 +54,11 @@ const { quizzes } = useQuizStorage();
 const { settings, settingsReady } = useSettingsStorage();
 
 watch(settingsReady, (ready) => {
-  if (ready) startUnblockTimer();
+  if (ready) {
+    if (settings.value.unblockTimerToggle) startUnblockTimer();
+    const themeMode = settings.value.themeMode;
+    document.documentElement.classList.toggle('dark', themeMode);
+  }
 });
 
 watch(quizzes, (newVal) => {
@@ -241,13 +245,13 @@ body,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #282828;
+  background-color: var(--background-color);
 }
 </style>
 
 <style scoped>
 .blocked-page {
-  background: #1e1e1e;
+  background: var(--background-highlight);
   color: #f0f0f0;
   max-width: 600px;
   width: 90%;
@@ -261,18 +265,18 @@ body,
 .blocked-page h1 {
   font-size: 2.2rem;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: var(--text-color);
 }
 
 .blocked-page h2 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #dddddd;
+  color: var(--text-color);
 }
 
 .blocked-page button {
-  background-color: #4a90e2;
-  color: #fff;
+  background-color: var(--accent-color);
+  color: var(--text-color);
   border: none;
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
@@ -283,7 +287,8 @@ body,
 }
 
 .blocked-page button:hover:enabled {
-  background-color: #3b7dd8;
+  transition: 0.3s;
+  filter: brightness(85%);
 }
 
 .blocked-page button:disabled {
@@ -305,7 +310,7 @@ label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #2c2c2e;
+  background: var(--background-highlight-2);
   padding: 0.6rem 1rem;
   border-radius: 6px;
   transition: background 0.2s;
@@ -317,7 +322,7 @@ label:hover {
 }
 
 input[type="radio"] {
-  accent-color: #4a90e2;
+  accent-color: var(--accent-color);
 }
 
 .short-answer-input input[type="text"] {
@@ -325,7 +330,7 @@ input[type="radio"] {
   width: 100%;
   border-radius: 6px;
   border: none;
-  background-color: #2c2c2e;
+  background-color: var(--background-highlight-2);
   color: #f0f0f0;
   font-size: 1rem;
   margin-bottom: 1rem;
@@ -345,17 +350,17 @@ p {
   margin-top: 1rem;
   font-size: 1.1rem;
   font-weight: bold;
-  color: #6ad76a;
+  color: var(--success-color);
 }
 
 p:has(+ input[type="radio"]:checked):not( :has(+ input[value="{{ currentQuestion.answer }}"]:checked)) {
-  color: #e56a6a;
+  color: var(--error-color);
 }
 
 .unblock-timer {
   margin-top: 2rem;
   padding: 1rem;
-  background-color: #2a2a2d;
+  background-color: var(--background-highlight);
   border-radius: 8px;
   font-size: 1.2rem;
   color: #ccc;

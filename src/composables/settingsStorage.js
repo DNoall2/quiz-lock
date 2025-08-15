@@ -3,6 +3,7 @@ import { ref, watch, toRaw } from "vue";
 const defaultSettings = {
   themeMode: true, // true = dark, false = light
   accentColor: "#d65d0e",
+  unblockTimerToggle: true,
   unblockDurationMinutes: 1,
   newQuestionButtonCountdownSeconds: 5,
   numberOfQuestions: 1,

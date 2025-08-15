@@ -24,6 +24,11 @@
     </div>
 
     <div class="form-group">
+      <label for="unblockTimerToggle">Unblock Timer Toggle:</label>
+      <input type="checkbox" id="unblockTimerToggle" v-model="settings.unblockTimerToggle" />
+    </div>
+
+    <div class="form-group">
       <label for="newQuestionButtonCountdownSeconds"
         >New Question Button Countdown (seconds):</label
       >
@@ -128,7 +133,7 @@ input[type='number']:focus {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--background-highlight);
+  background-color: var(--background-highlight-2);
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }

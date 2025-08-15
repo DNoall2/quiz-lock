@@ -43,10 +43,11 @@ watch(() => settings.value.themeMode, (isDark) => {
   opacity: 0;
 }
 </style>
-<style>
+<!-- <style>
 :root {
   --background-color: #fff;
   --background-highlight: #f0f0f0;
+  --background-highlight-2: #777;
 
   --text-color: #333;
 
@@ -82,4 +83,4 @@ body {
   padding: 0;
   margin: 0;
 }
-</style>
+</style> -->

@@ -69,7 +69,7 @@ function removeSite(index) {
   max-width: 800px;
   margin: 2rem auto;
   padding: 2rem;
-  background: var(--background-color);
+  background: var(--background-highlight);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   font-family: 'Segoe UI', Roboto, sans-serif;
