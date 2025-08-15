@@ -28,9 +28,11 @@
         </span>
       </li>
     </ul>
+    <button @click="addQuiz" class="add-quiz-button">Add Quiz</button>
 
     <dialog ref="editDialog" v-if="selectedQuiz">
       <h2>Edit Quiz: {{ selectedQuiz.name }}</h2>
+      <button @click="addQuestion">Add Question</button>
       <form method="dialog">
         <div v-for="(question, index) in selectedQuiz.data" :key="index">
           <label
@@ -73,6 +75,25 @@ import { useQuizStorage } from '../composables/quizStorage.js';
 const { quizzes, importQuiz, deleteQuiz } = useQuizStorage();
 const editDialog = ref(null);
 const selectedQuiz = ref(null);
+
+function addQuiz() {
+  const newQuiz = {
+    name: 'Untitled Quiz',
+    enabled: true,
+    origin: 'local',
+    data: [],
+  }
+  importQuiz(newQuiz.data, newQuiz.name, newQuiz.origin);
+}
+
+function addQuestion() {
+  selectedQuiz.value.data.push({
+    question: '',
+    answer: '',
+    type: 'multiple',
+    choices: [],
+  });
+}
 
 function handleImport(event) {
   const file = event.target.files[0];
@@ -145,7 +166,7 @@ div {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background-color: var(--background-color);
+  background-color: var(--background-highlight);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
@@ -302,5 +323,13 @@ form hr {
 form button[type='submit'] {
   align-self: flex-end;
   margin-top: 1rem;
+}
+
+.add-quiz-button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  display: block;
+  width: 100%;
 }
 </style>

@@ -36,7 +36,7 @@ export function useQuizStorage() {
     });
     // check for duplicates
     const existingQuiz = quizzes.value.find((q) => q.name === name);
-    if (existingQuiz) {
+    if (existingQuiz && existingQuiz.name != "Untitled Quiz" ) {
       const existingQuestionsSet = new Set(
         existingQuiz.data.map((q) => q.question.trim().toLowerCase()),
       );
