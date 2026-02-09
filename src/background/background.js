@@ -1,4 +1,5 @@
 let blockedSites = [];
+let cleanupInterval = null;
 
 browser.storage.local.get('sites').then((result) => {
   blockedSites = result.sites || [];
@@ -8,17 +9,69 @@ browser.storage.onChanged.addListener((changes) => {
   if (changes.sites) {
     blockedSites = changes.sites.newValue || [];
   }
-})
+});
+
+function cleanExpiredSites() {
+  browser.storage.local.get('temporarilyAllowed').then((result) => {
+    const now = Date.now();
+    if (!Array.isArray(result.temporarilyAllowed)) return;
+
+    const updated = result.temporarilyAllowed.filter((entry) => {
+      return typeof entry === 'object' && entry.expiresAt > now;
+    });
+
+    if (updated.length !== result.temporarilyAllowed.length) {
+      browser.storage.local.set({ temporarilyAllowed: updated });
+    }
+  });
+}
+
+if (!cleanupInterval) {
+  cleanupInterval = setInterval(cleanExpiredSites, 60 * 1000);
+}
+
+function matchesBlockedDomain(hostname, blockedName) {
+  const cleanBlocked = blockedName.replace(/^https?:\/\//, '').replace(/^www\./, '').toLowerCase();
+  return (
+    hostname === cleanBlocked ||
+    hostname.endsWith('.' + cleanBlocked)
+  );
+}
 
 browser.webRequest.onBeforeRequest.addListener(
-  function(details) {
-    const url = new URL(details.url);
-    const isBlocked = blockedSites.some((site) => url.hostname.includes(site));
+  async function (details) {
+    const [stored, sitesResult] = await Promise.all([
+      browser.storage.local.get(['temporarilyAllowed']),
+      browser.storage.local.get(['sites']),
+    ]);
 
-    if (isBlocked) {
-      return { redirectUrl: browser.runtime.getURL('blocked.html') }
-      }
+    const temporarilyAllowed = stored.temporarilyAllowed || [];
+    const sites = sitesResult.sites || [];
+
+    const url = new URL(details.url);
+    const domain = url.hostname;
+
+    const isBlocked = sites.some((site) => {
+      const siteObj = typeof site === 'string' ? { name: site, enabled: true } : site;
+      if (!siteObj.enabled) return false;
+      return matchesBlockedDomain(domain.toLowerCase(), siteObj.name);
+    });
+    
+    const isTemporarilyAllowed = temporarilyAllowed.some((site) => {
+      return typeof site === 'object' && details.url.startsWith(site.url) && site.expiresAt > Date.now();
+    });
+
+    if (isBlocked && !isTemporarilyAllowed) {
+      await browser.storage.local.set({ blockedUrl: details.url });
+      return { redirectUrl: browser.runtime.getURL('blocked.html') };
+    }
+
+    return {};
   },
-  { urls: ['https://*/*'], types: ['main_frame'] },
-  ['blocking']
+  { urls: ['<all_urls>'], types: ['main_frame'] },
+  ['blocking'],
 );
+
+browser.browserAction.onClicked.addListener(() => {
+  browser.tabs.create({ url: browser.runtime.getURL('index.html') });
+});

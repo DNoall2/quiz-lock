@@ -1,1 +1,0 @@
-import{_ as o,c,o as n,t,B as r}from"./_plugin-vue_export-helper-DoZMXZ40.js";const s={};function a(p,e){return n(),c("div",null,e[0]||(e[0]=[t("h1",null,"Blocked",-1)]))}const l=o(s,[["render",a]]);r(l).mount("#app");

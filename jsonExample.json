@@ -1,0 +1,56 @@
+{
+  "quizzes": [
+    {
+      "tag": "Graphics: Vectors",
+      "enabled": true,
+      "questions": [
+        {
+          "question": "What operation on two vectors is used to find the direction vector?",
+          "answer": "subtraction",
+          "choices": [],
+          "file": "Codex/Computer Graphics/Vector Math.md"
+        }
+      ]
+    },
+    {
+      "tag": "Graphics: Lighting",
+      "enabled": true,
+      "questions": [
+        {
+          "question": "What underlying principle of graphics programming does diffuse mapping and specular mapping emulate?",
+          "answer": "Texture Mapping",
+          "choices": [
+            "Texture Mapping",
+            "Vectors",
+            "Shaders",
+            "Coordinate Systems"
+          ],
+          "file": "Codex/Computer Graphics/Lighting/Lighting Maps.md"
+        },
+        {
+          "question": "What component of Phong lighting requires a black and white texture for identifying values for the fragment shader?",
+          "answer": "Specular Maps",
+          "choices": [],
+          "file": "Codex/Computer Graphics/Lighting/Lighting Maps.md"
+        }
+      ]
+    },
+    {
+      "tag": "Test",
+      "enabled" : true,
+      "questions": [
+        {
+          "question": "Test Multiple Choice",
+          "answer": "Test Me",
+          "choices": [
+            "Test 1",
+            "Test 2",
+            "Test 3",
+            "Test 4"
+          ],
+          "file": "File"
+        }
+      ]
+    }
+  ]
+}

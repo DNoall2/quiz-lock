@@ -1,18 +1,33 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+import path from 'path';
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'manifest.json', // or wherever your manifest is
+          dest: '.', // copies to root of dist/
+        },
+        {
+          src: 'src/background/background.js',
+          dest: '.', // optional if you want to move it out of dist/public
+        },
+      ],
+    }),
+  ],
   build: {
+    outDir: 'dist',
+    emptyOutDir: true,
     rollupOptions: {
       input: {
-        popup: resolve(__dirname, 'index.html'),
-        blocked: resolve(__dirname, 'blocked.html'),
+        main: path.resolve(__dirname, 'index.html'),
+        blocked: path.resolve(__dirname, 'blocked.html'),
       },
     },
-    outdir: 'dist',
-    emptyOutDir: true
-  }
-})
+  },
+  publicDir: false, // Disable Vite's default copying of public/
+});
