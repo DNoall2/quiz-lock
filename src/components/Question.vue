@@ -2,7 +2,7 @@
   <div class="question">
     <label
       >Question Type:
-      <select v-model="question.type">
+      <select v-model="question.type" @change="touched = true" class="question-type">
         <option value="multiple">Multiple Choice</option>
         <option value="short">Short Answer</option>
       </select>
@@ -20,7 +20,7 @@
       <p v-if="errors.answer && touched" class="error">{{ errors.answer }}</p>
     </label>
     <br />
-    <div v-if="question.type === 'multiple'">
+    <div v-if="question.type === 'multiple'" class="choices">
       <label>Choices (comma-separated): </label>
       <div v-for="(choice, index) in question.choices || []" :key="index" class="choice-row">
         <input type="text" v-model="question.choices[index]" />
@@ -98,16 +98,26 @@ function autoGrow(event) {
 
 <style scoped>
 .question {
-  background-color: var(--background-color);
+  background-color: var(--surface-1);
   padding: 1rem;
   border-radius: 8px;
-  border: 1px solid var(--background-highlight);
+  border: 1px solid var(--surface-1);
 }
 
 .error {
   color: var(--error-color);
   font-size: 0.8rem;
   margin-top: 0.5rem;
+}
+
+.question-type {
+  width: 90%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-color);
+  background-color: var(--surface-2);
+  font-size: 1rem;
 }
 
 label {
@@ -120,16 +130,24 @@ label {
 input {
   width: 90%;
   padding: 0.5rem;
-  border: 1px solid var(--background-highlight);
+  border: none;
   border-radius: 6px;
+  color: var(--text-color);
+  background-color: var(--surface-2);
+  box-shadow: var(--shadow-2);
+  outline: none;
   font-size: 1rem;
 }
 
 textarea {
   width: 90%;
   padding: 0.5rem;
-  border: 1px solid var(--background-highlight);
+  border: none;
   border-radius: 6px;
+  color: var(--text-color);
+  background-color: var(--surface-2);
+  box-shadow: var(--shadow-2);
+  outline: none;
   font-size: 1rem;
   resize: vertical;
   min-height: 1rem;
@@ -137,16 +155,15 @@ textarea {
 }
 
 /* Choice input inside modal */
-div {
-  background-color: var(--background-color);
+.choices {
   padding: 1rem;
   border-radius: 8px;
-  border: 1px solid var(--background-highlight);
+  border: 1px solid var(--surface-1);
 }
 
 hr {
   border: none;
-  border-top: 1px solid var(--background-highlight);
+  border-top: 1px solid var(--surface-1);
   margin: 0.5rem 0;
 }
 
@@ -154,10 +171,15 @@ hr {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
+  outline: none;
+  border: none;
 }
 
 .choice-row input {
   flex: 1;
+  outline: none;
+  border: none;
+  background-color: 
 }
 
 .choice-row button {

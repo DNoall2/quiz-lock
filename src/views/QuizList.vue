@@ -122,7 +122,7 @@ function handleQuizValidity({ isValid, disable }) {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background-color: var(--background-highlight);
+  background-color: var(--surface-1);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
@@ -147,8 +147,7 @@ ul {
 }
 
 li {
-  background-color: var(--background-color);
-  border: 1px solid var(--background-highlight);
+  background-color: var(--surface-2);
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 8px;

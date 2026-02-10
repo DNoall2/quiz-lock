@@ -83,7 +83,7 @@ function handleUpdateQuestion({index, update}) {
   padding: 1.5rem;
   border: none;
   border-radius: 12px;
-  background: var(--background-highlight);
+  background: var(--surface-0);
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
@@ -95,7 +95,7 @@ function handleUpdateQuestion({index, update}) {
   border: none;
   border-radius: 6px;
   font-size: 2rem;
-  background-color: var(--background-highlight);
+  background-color: var(--surface-0);
   color: var(--text-color);
 }
 

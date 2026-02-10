@@ -75,7 +75,7 @@ watch(settings.value.themeMode, (newValue) => {
   max-width: 600px;
   margin: 2rem auto;
   padding: 2rem;
-  background-color: var(--background-highlight);
+  background-color: var(--surface-1);
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -101,7 +101,7 @@ label {
 
 input[type='number'] {
   padding: 0.5rem;
-  border: 1px solid var(--background-highlight);
+  border: 1px solid var(--surface-1);
   border-radius: 6px;
   font-size: 1rem;
   transition: border-color 0.2s;
@@ -133,7 +133,7 @@ input[type='number']:focus {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--background-highlight-2);
+  background-color: var(--surface-2);
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }

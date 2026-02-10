@@ -121,7 +121,8 @@ function cancelEdit() {
 }
 
 .edit-popup {
-  background: var(--background-highlight);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-1);
   padding: 1rem;
   border-radius: 0.5rem;
   width: 30rem;
