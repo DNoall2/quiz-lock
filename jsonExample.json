@@ -3,6 +3,7 @@
     {
       "tag": "Graphics: Vectors",
       "enabled": true,
+      "isValid": true,
       "questions": [
         {
           "question": "What operation on two vectors is used to find the direction vector?",
@@ -15,6 +16,7 @@
     {
       "tag": "Graphics: Lighting",
       "enabled": true,
+      "isValid": true,
       "questions": [
         {
           "question": "What underlying principle of graphics programming does diffuse mapping and specular mapping emulate?",
@@ -37,7 +39,8 @@
     },
     {
       "tag": "Test",
-      "enabled" : true,
+      "enabled": true,
+      "isValid": true,
       "questions": [
         {
           "question": "Test Multiple Choice",

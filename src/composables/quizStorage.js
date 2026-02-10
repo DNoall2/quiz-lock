@@ -51,6 +51,7 @@ export function useQuizStorage() {
         id: uuidv4(),
         name,
         enabled: true,
+        isValid: true,
         origin,
         data: newQuestions,
       };
