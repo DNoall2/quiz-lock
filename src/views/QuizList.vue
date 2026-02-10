@@ -1,39 +1,45 @@
 <template>
-  <div class="page-container">
-    <h1>Quiz List</h1>
-    <input type="file" @change="handleImport" accept=".json" />
+  <div>
+    <div class="page-container">
+      <h1>Quiz List</h1>
+      <div class="import">
+        <input type="file" @change="handleImport" accept=".json" />
+        <p v-if="importFailedMessage" class="error">
+          {{ importFailedMessage }}
+        </p>
+      </div>
 
-    <h4 v-if="obsidianQuizzes.length > 0">Obsidian Quizzes</h4>
-    <ul>
-      <li v-for="quiz in quizzes.filter((q) => q.origin === 'obsidian')" :key="quiz.id">
-        <label>
-          <input type="checkbox" v-model="quiz.enabled" />
-          {{ quiz.name }}
-        </label>
-        <button @click="editQuiz(quiz)">Edit</button>
-      </li>
-    </ul>
+      <h4 v-if="obsidianQuizzes.length > 0">Obsidian Quizzes</h4>
+      <ul>
+        <li v-for="quiz in quizzes.filter((q) => q.origin === 'obsidian')" :key="quiz.id">
+          <label>
+            <input type="checkbox" v-model="quiz.enabled" :disabled="!quiz.isValid" />
+            {{ quiz.name }}
+          </label>
+          <p v-if="!quiz.isValid" class="error">There are errors in one or more of your questions. This quiz will be disabled until conflicts are resolved.</p>
+          <button @click="editQuiz(quiz)">Edit</button>
+        </li>
+      </ul>
 
-    <hr />
-    <h4>Local Quizzes</h4>
-    <ul>
-      <li v-for="quiz in quizzes.filter((q) => q.origin === 'local')" :key="quiz.id">
-        <label>
-          <input type="checkbox" v-model="quiz.enabled" />
-          {{ quiz.name }}
-        </label>
-        <span>
-          <button @click="editQuiz(quiz)" class="edit-quiz-button">Edit</button>
-          <button @click="deleteQuiz(quiz.id)" class="delete-quiz-button">Delete</button>
-        </span>
-      </li>
-    </ul>
-    <button @click="addQuiz" class="add-quiz-button">Add Quiz</button>
+      <hr />
+      <h4>Local Quizzes</h4>
+      <ul>
+        <li v-for="quiz in quizzes.filter((q) => q.origin === 'local')" :key="quiz.id">
+          <label>
+            <input type="checkbox" v-model="quiz.enabled" />
+            {{ quiz.name }}
+          </label>
+          <span>
+            <button @click="editQuiz(quiz)" class="edit-quiz-button">Edit</button>
+            <button @click="deleteQuiz(quiz.id)" class="delete-quiz-button">Delete</button>
+          </span>
+        </li>
+      </ul>
+      <button @click="addQuiz" class="add-quiz-button">Add Quiz</button>
+    </div>
+
+    <EditQuizModal v-if="selectedQuiz !== null" :selectedQuiz="selectedQuiz" @close="selectedQuiz = null" @update-quiz-validity="handleQuizValidity" />
   </div>
-
-  <teleport to="body">
-    <EditQuizModal :selectedQuiz="selectedQuiz" v-if="selectedQuiz" @close="selectedQuiz = null" />
-  </teleport>
 </template>
 
 <script setup>
@@ -46,6 +52,8 @@ const selectedQuiz = ref(null);
 
 const obsidianQuizzes = quizzes.value.filter((q) => q.origin === 'obsidian');
 
+const importFailedMessage = ref(null);
+
 function addQuiz() {
   const newQuiz = {
     name: 'Untitled Quiz',
@@ -57,9 +65,17 @@ function addQuiz() {
 }
 
 function handleImport(event) {
-  const file = event.target.files[0];
-  console.log(`[IMPORT] File:`, file);
-  if (!file) return;
+  importFailedMessage.value = null;
+
+  const input = event.target;
+  const file = input.files[0];
+
+  input.value = '';
+
+  if (!file) {
+    importFailedMessage.value = 'Error: file not found';
+    return;
+  }
 
   const reader = new FileReader();
   reader.onload = () => {
@@ -73,10 +89,12 @@ function handleImport(event) {
           }
         });
       } else {
+        importFailedMessage.value = 'Invalid quiz format';
         console.error('Invalid quiz format');
       }
     } catch (error) {
       console.error(error);
+      importFailedMessage.value = 'Failed to parse JSON file';
     }
   };
   reader.onerror = (error) => {
@@ -87,9 +105,13 @@ function handleImport(event) {
 
 function editQuiz(quiz) {
   selectedQuiz.value = quiz;
-  selectedQuiz.value.data.forEach((q) => {
-    q._choicesString = Array.isArray(q.choices) ? q.choices.join(', ') : '';
-  });
+  console.log("Selected Quiz:", selectedQuiz.value);
+}
+
+function handleQuizValidity({ isValid, disable }) {
+  if (!selectedQuiz.value) return;
+  selectedQuiz.value.isValid = isValid;
+  if (disable) selectedQuiz.value.enabled = false;
 }
 </script>
 
@@ -113,7 +135,7 @@ h1 {
 }
 
 /* File input */
-input[type='file'] {
+.import {
   margin-bottom: 1.5rem;
 }
 
@@ -184,5 +206,11 @@ button:hover {
   border: none;
   display: block;
   margin-left: auto;
+}
+
+.error {
+  color: var(--error-color);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
 }
 </style>

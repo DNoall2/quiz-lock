@@ -11,7 +11,7 @@
     <label
       >Question:
       <textarea v-model="question.question" rows="1" @input="autoGrow($event)" @blur="touched = true" />
-      <p v-if="errors.question && touched" class="error">{{ errors.name }}</p>
+      <p v-if="errors.question && touched" class="error">{{ errors.question }}</p>
     </label>
     <br />
     <label
@@ -22,7 +22,7 @@
     <br />
     <div v-if="question.type === 'multiple'">
       <label>Choices (comma-separated): </label>
-      <div v-for="(choice, index) in question.choices" :key="index" class="choice-row">
+      <div v-for="(choice, index) in question.choices || []" :key="index" class="choice-row">
         <input type="text" v-model="question.choices[index]" />
         <button @click="deleteChoice(index)">Delete</button>
       </div>
@@ -47,9 +47,14 @@ const props = defineProps({
 const emit = defineEmits(['validation']); 
 
 // ---------- CHOICES ----------
-if (props.question.type === 'multiple' && !Array.isArray(props.question.choices)) {
-  props.question.choices = [];
-}
+watch(
+  () => props.question.type,
+  (type) => {
+    if (type === 'multiple' && !Array.isArray(props.question.choices)) {
+      props.question.choices = [];
+    }
+  }, { immediate: true }
+);
 
 function addChoice() {
   props.question.choices.push('');
@@ -80,6 +85,7 @@ const errors = computed(() => {
 });
 
 watch(errors, (newErrors) => {
+  if (!props.question) return;
   emit('validation', { hasError: Object.keys(newErrors).length > 0, errors: newErrors });
 }, { immediate: true });
 

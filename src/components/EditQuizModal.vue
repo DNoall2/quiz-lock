@@ -6,12 +6,12 @@
         There are errors in one of your questions. You will not be able to use them until all errors are resolved.
       </p>
       <form method="dialog">
-        <div v-for="(question, index) in selectedQuiz.data" :key="index">
-          <Question :question="question" @validation="isValid = $event.hasError" />
+        <div v-for="(question, index) in selectedQuiz.data || []" :key="index">
+          <Question :question="question" @validation="handleValidation(index, $event)" />
           <hr />
         </div>
         <div class="end-buttons">
-          <button @click="addQuestion" class="add-question-button">Add Question</button>
+          <button type="button" @click="addQuestion" class="add-question-button">Add Question</button>
           <!--<button type="submit" @click="$emit('save-quiz', selectedQuiz)">Save</button>-->
         </div>
       </form>
@@ -20,18 +20,26 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 import Question from './Question.vue';
-
-const isValid = ref(true);
-const questionErrors = ref({});
 
 const props = defineProps({
   selectedQuiz: Object,
 });
+const emit = defineEmits(['save-quiz', 'update-quiz-validity']);
 
-const emit = defineEmits(['save-quiz']);
+const questionErrors = ref({});
+const isValid = computed(() => {
+  return Object.keys(questionErrors.value).length === 0;
+});
+
+watch(isValid, (valid) => {
+  emit('update-quiz-validity', {
+    isValid: valid,
+    disable: !valid
+  });
+}, { immediate: true });
 
 function addQuestion() {
   props.selectedQuiz.data.push({
@@ -43,11 +51,15 @@ function addQuestion() {
 }
 
 function handleValidation(index, payload) {
-  questionErrors.value[index] = payload.errors;
+  if (payload.hasError) {
+    questionErrors.value[index] = payload.errors;
+  } else {
+    delete questionErrors.value[index];
+  }
+}
 
-  isValid.value = !payload.hasError;
-  console.log(`[validation] ${index}:`, payload);
-  console.log(`[validation] isValid:`, isValid.value);
+function handleUpdateQuestion({index, update}) {
+  props.selectedQuiz.data[index] = update
 }
 </script>
 
