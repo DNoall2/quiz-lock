@@ -25,8 +25,8 @@
         Enabled:
         <input v-model="editedEnabled" type="checkbox" />
       </label>
-      
-      <div>
+      <hr />
+      <div class="popup-buttons">
         <button @click="saveEdit">Save</button>
         <button @click="cancelEdit">Cancel</button>
       </div>
@@ -122,16 +122,26 @@ function cancelEdit() {
 
 .edit-popup {
   background: var(--surface-1);
-  box-shadow: var(--shadow-1);
   padding: 1rem;
   border-radius: 0.5rem;
   width: 30rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .edit-popup label {
   display: block;
+  font-weight: 500;
+  font-size: 1rem;
   margin: 10px 0;
+  color: var(--text-color);
+}
+
+.edit-popup input {
+  background-color: var(--surface-2);
+  color: var(--text-color);
+  outline: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
 }
 
 .popup-buttons {
@@ -139,6 +149,7 @@ function cancelEdit() {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+  margin-left: auto;
 }
 
 </style>
