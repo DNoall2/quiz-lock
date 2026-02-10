@@ -69,7 +69,7 @@ function removeSite(index) {
   max-width: 800px;
   margin: 2rem auto;
   padding: 2rem;
-  background: var(--background-highlight);
+  background: var(--surface-1);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   font-family: 'Segoe UI', Roboto, sans-serif;
@@ -92,7 +92,7 @@ function removeSite(index) {
   flex: 1;
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
-  border: 1px solid var(--background-highlight);
+  border: 1px solid var(--surface-1);
   border-radius: 6px;
   transition: border-color 0.2s;
 }
@@ -135,7 +135,7 @@ ul {
 }
 
 li {
-  background-color: var(--background-highlight);
+  background-color: var(--surface-2);
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 8px;

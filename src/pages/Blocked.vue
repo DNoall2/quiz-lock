@@ -245,13 +245,13 @@ body,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--background-color);
+  background-color: var(--surface-0);
 }
 </style>
 
 <style scoped>
 .blocked-page {
-  background: var(--background-highlight);
+  background: var(--surface-1);
   color: #f0f0f0;
   max-width: 600px;
   width: 90%;
@@ -310,7 +310,7 @@ label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--background-highlight-2);
+  background: var(--surface-2);
   padding: 0.6rem 1rem;
   border-radius: 6px;
   transition: background 0.2s;
@@ -330,7 +330,7 @@ input[type="radio"] {
   width: 100%;
   border-radius: 6px;
   border: none;
-  background-color: var(--background-highlight-2);
+  background-color: var(--surface-2);
   color: #f0f0f0;
   font-size: 1rem;
   margin-bottom: 1rem;
@@ -360,7 +360,7 @@ p:has(+ input[type="radio"]:checked):not( :has(+ input[value="{{ currentQuestion
 .unblock-timer {
   margin-top: 2rem;
   padding: 1rem;
-  background-color: var(--background-highlight);
+  background-color: var(--surface-1);
   border-radius: 8px;
   font-size: 1.2rem;
   color: #ccc;

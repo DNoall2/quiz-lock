@@ -19,7 +19,7 @@
   display: flex;
   gap: 1.5rem;
   padding: 1rem 2rem;
-  background-color: var(--background-highlight);
+  background-color: var(--surface-1);
   border-bottom: 1px solid var(--accent-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   font-family: "Segoe UI", Roboto, sans-serif;
