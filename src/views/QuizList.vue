@@ -16,8 +16,13 @@
             <input type="checkbox" v-model="quiz.enabled" :disabled="!quiz.isValid" />
             {{ quiz.name }}
           </label>
-          <p v-if="!quiz.isValid" class="error">There are errors in one or more of your questions. This quiz will be disabled until conflicts are resolved.</p>
-          <button @click="editQuiz(quiz)">Edit</button>
+          <p v-if="!quiz.isValid" class="error">
+            There are errors in one or more of your questions. This quiz will be disabled until conflicts are resolved.
+          </p>
+          <div>
+            <button @click="editQuiz(quiz)">Edit</button>
+            <button @click="deleteQuiz(quiz.id)">Delete</button>
+          </div>
         </li>
       </ul>
 
@@ -36,9 +41,11 @@
         </li>
       </ul>
       <button @click="addQuiz" class="add-quiz-button">Add Quiz</button>
+      <button @click="exportQuizzes" class="export-quizzes-button">Export Quizzes</button>
     </div>
 
-    <EditQuizModal v-if="selectedQuiz !== null" :selectedQuiz="selectedQuiz" @close="selectedQuiz = null" @update-quiz-validity="handleQuizValidity" />
+    <EditQuizModal v-if="selectedQuiz !== null" :selectedQuiz="selectedQuiz" @close="selectedQuiz = null"
+      @update-quiz-validity="handleQuizValidity" />
   </div>
 </template>
 
@@ -85,7 +92,9 @@ function handleImport(event) {
       if (content.quizzes && Array.isArray(content.quizzes)) {
         content.quizzes.forEach((quiz) => {
           if (quiz.questions && Array.isArray(quiz.questions)) {
-            importQuiz(quiz.questions, quiz.tag || 'Untitled Quiz', quiz.origin || 'obsidian');
+            importQuiz(quiz, quiz.tag || 'Untitled Quiz', quiz.origin || 'obsidian');
+          } else if (quiz.data && Array.isArray(quiz.data)) {
+            importQuiz(quiz, quiz.tag || 'Untitled Quiz', quiz.origin || 'obsidian');
           }
         });
       } else {
@@ -103,9 +112,19 @@ function handleImport(event) {
   reader.readAsText(file);
 }
 
+function exportQuizzes() {
+  const data = JSON.stringify({ quizzes: quizzes.value });
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'quiz-lock-quizzes.json';
+  link.click();
+}
+
 function editQuiz(quiz) {
   selectedQuiz.value = quiz;
-  console.log("Selected Quiz:", selectedQuiz.value);
+  console.log('Selected Quiz:', selectedQuiz.value);
 }
 
 function handleQuizValidity({ isValid, disable }) {
