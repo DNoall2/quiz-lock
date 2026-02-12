@@ -25,7 +25,8 @@ export function useQuizStorage() {
     );
   }
 
-  function importQuiz(data, name = "Untitled Quiz", origin = 'obsidian') {
+  function importQuiz(quiz, name = "Untitled Quiz", origin = 'obsidian') {
+    const data = quiz.questions || quiz.data;
     const newQuestions = data.map((entry) => {
       return {
         type: entry.choices && entry.choices.length > 0 ? "multiple" : "short",
@@ -46,6 +47,17 @@ export function useQuizStorage() {
       if (filteredNewQuestions.length > 0) {
         existingQuiz.data.push(...filteredNewQuestions);
       }
+    } else if (quiz.id) {
+      console.log("Importing quiz with id:", quiz.id);
+      const newQuiz = {
+        id: quiz.id,
+        name: quiz.name,
+        enabled: quiz.enabled,
+        isValid: quiz.isValid,
+        origin: quiz.origin,
+        data: newQuestions,
+      };
+      quizzes.value.push(reactive(newQuiz));
     } else {
       const newQuiz = {
         id: uuidv4(),
