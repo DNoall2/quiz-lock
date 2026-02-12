@@ -96,7 +96,7 @@ function handleImport(event) {
           if (quiz.questions && Array.isArray(quiz.questions)) {
             importQuiz(quiz, quiz.tag || 'Untitled Quiz', quiz.origin || 'obsidian');
           } else if (quiz.data && Array.isArray(quiz.data)) {
-            importQuiz(quiz, quiz.tag || 'Untitled Quiz', quiz.origin || 'obsidian');
+            importQuiz(quiz, quiz.tag || 'Untitled Quiz', quiz.origin || 'local');
           }
         });
       } else {

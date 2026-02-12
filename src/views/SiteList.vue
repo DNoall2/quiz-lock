@@ -41,7 +41,7 @@ function handleSiteExistsText() {
 }
 
 function addSite() {
-  const trimmed = newSite.value.trim();
+  const trimmed = newSite.value.trim().toLowerCase();
   const exists = sites.value.some((site) => site.name.toLowerCase().includes(trimmed));
   if (trimmed && !exists) {
     sites.value.push({ name: trimmed, hours: 0, minutes: 1, enabled: true }); // default to 0 hours and 1 minute
