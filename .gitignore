@@ -25,3 +25,4 @@ tmp/
 dist/
 
 test*
+quiz-lock-quizzes.json
