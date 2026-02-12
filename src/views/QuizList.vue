@@ -19,9 +19,9 @@
           <p v-if="!quiz.isValid" class="error">
             There are errors in one or more of your questions. This quiz will be disabled until conflicts are resolved.
           </p>
-          <div>
-            <button @click="editQuiz(quiz)">Edit</button>
-            <button @click="deleteQuiz(quiz.id)">Delete</button>
+          <div class="row-buttons">
+            <IconButton @click="editQuiz(quiz)" :path="mdiPencil" size="24" />
+            <IconButton @click="deleteQuiz(quiz.id)" :path="mdiDelete" size="24" />
           </div>
         </li>
       </ul>
@@ -34,14 +34,14 @@
             <input type="checkbox" v-model="quiz.enabled" />
             {{ quiz.name }}
           </label>
-          <span>
-            <button @click="editQuiz(quiz)" class="edit-quiz-button">Edit</button>
-            <button @click="deleteQuiz(quiz.id)" class="delete-quiz-button">Delete</button>
-          </span>
+          <div class="row-buttons">
+            <IconButton @click="editQuiz(quiz)" :path="mdiPencil" size="24" />
+            <IconButton @click="deleteQuiz(quiz.id)" :path="mdiDelete" size="24" />
+          </div>
         </li>
       </ul>
-      <button @click="addQuiz" class="add-quiz-button">Add Quiz</button>
-      <button @click="exportQuizzes" class="export-quizzes-button">Export Quizzes</button>
+      <IconButton @click="addQuiz" :path="mdiPlusBox" size="24" />
+      <IconButton @click="exportQuizzes" :path="mdiFileExport" size="24" :label="'Export Quizzes'"/>
     </div>
 
     <EditQuizModal v-if="selectedQuiz !== null" :selectedQuiz="selectedQuiz" @close="selectedQuiz = null"
@@ -53,6 +53,8 @@
 import { ref, nextTick } from 'vue';
 import { useQuizStorage } from '../composables/quizStorage.js';
 import EditQuizModal from '../components/EditQuizModal.vue';
+import IconButton from '../components/IconButton.vue';
+import { mdiPlusBox, mdiFileExport, mdiPencil, mdiDelete } from '@mdi/js';
 
 const { quizzes, importQuiz, deleteQuiz } = useQuizStorage();
 const selectedQuiz = ref(null);
@@ -68,7 +70,7 @@ function addQuiz() {
     origin: 'local',
     data: [],
   };
-  importQuiz(newQuiz.data, newQuiz.name, newQuiz.origin);
+  importQuiz(newQuiz, newQuiz.name, newQuiz.origin);
 }
 
 function handleImport(event) {
@@ -187,7 +189,7 @@ label {
   font-weight: 500;
 }
 
-span {
+.row-buttons {
   display: flex;
   align-items: center;
   gap: 0.5rem;

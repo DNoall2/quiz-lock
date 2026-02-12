@@ -2,15 +2,15 @@
   <span class="site">
     {{ props.site.name }}
     <div class="site-buttons">
-    <button class="material-symbols-outlined" @click="editing = true">edit</button>
-    <button class="material-symbols-outlined" @click="emit('remove')">delete</button>
+      <IconButton @click="editing = true" :path="mdiPencil" size="24" />
+      <IconButton @click="emit('remove')" :path="mdiDelete" size="24" />
     </div>
   </span>
 
   <div v-if="editing" class="edit-popup-overlay">
     <div class="edit-popup">
       <label>
-        Site: 
+        Site:
         <input v-model="editedName" type="text" />
       </label>
       <label>
@@ -36,6 +36,8 @@
 
 <script setup>
 import { ref, watch } from 'vue';
+import IconButton from './IconButton.vue';
+import { mdiPencil, mdiDelete } from '@mdi/js';
 
 const props = defineProps(['site', 'onUpdate']);
 const emit = defineEmits(['remove']);
@@ -46,14 +48,17 @@ const editedHours = ref(props.site.hours || 0);
 const editedMinutes = ref(props.site.minutes || 0);
 const editedEnabled = ref(props.site.enabled || false);
 
-watch(() => props.site, () => {
+watch(
+  () => props.site,
+  () => {
     if (!editing.value) {
       editedName.value = props.site.name || '';
       editedHours.value = props.site.hours || 0;
       editedMinutes.value = props.site.minutes || 0;
       editedEnabled.value = props.site.enabled || false;
     }
-});
+  },
+);
 
 function saveEdit() {
   if (props.onUpdate) {
@@ -77,7 +82,6 @@ function cancelEdit() {
 </script>
 
 <style scoped>
-
 .site {
   display: flex;
   justify-content: space-between;
@@ -151,5 +155,4 @@ function cancelEdit() {
   justify-content: flex-end;
   margin-left: auto;
 }
-
 </style>

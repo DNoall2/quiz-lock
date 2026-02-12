@@ -10,10 +10,7 @@
           <Question :question="question" @validation="handleValidation(index, $event)" />
           <hr />
         </div>
-        <div class="end-buttons">
-          <button type="button" @click="addQuestion" class="add-question-button">Add Question</button>
-          <!--<button type="submit" @click="$emit('save-quiz', selectedQuiz)">Save</button>-->
-        </div>
+          <IconButton @click="addQuestion" :path="mdiPlusBox" size="24" class="add-question-button" />
       </form>
     </div>
   </div>
@@ -21,6 +18,8 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
+import IconButton from './IconButton.vue';
+import { mdiPlusBox } from '@mdi/js';
 
 import Question from './Question.vue';
 
@@ -87,6 +86,7 @@ function handleUpdateQuestion({index, update}) {
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 .quiz-name {
@@ -121,12 +121,46 @@ button:hover {
   background-color: var(--accent-color-shade);
 }
 
-.end-buttons {
+.add-question-button {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   position: sticky;
+  border: none;
   bottom: 0;
+  width: 100%;
+  align-self: flex-end;
+  background-color: transparent;
+  margin-top: 1rem;
+  color: var(--text-color);
+}
+
+.add-question-button::before,
+.add-question-button::after {
+  content: " ";
+  display: block;
+  height: 2px;
+  background-color: var(--text-color);
+  position: absolute;
+  top: 50%;
+  width: 45%;
+}
+
+.add-question-button::before {
+  right: 0;
+}
+
+.add-question-button::after {
+  left: 0;
+}
+
+.add-question-button:hover {
+  color: var(--accent-color);
+  background-color: transparent;
+}
+
+.add-question-button:hover::before, .add-question-button:hover::after {
+  background-color: var(--accent-color);
 }
 
 /* Save button inside modal */
@@ -135,8 +169,4 @@ button[type='submit'] {
   margin-top: 1rem;
 }
 
-.add-question-button {
-  align-self: flex-end;
-  margin-top: 1rem;
-}
 </style>
