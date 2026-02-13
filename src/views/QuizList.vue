@@ -12,16 +12,24 @@
       <h4 v-if="obsidianQuizzes.length > 0">Obsidian Quizzes</h4>
       <ul>
         <li v-for="quiz in quizzes.filter((q) => q.origin === 'obsidian')" :key="quiz.id">
-          <label>
-            <input type="checkbox" v-model="quiz.enabled" :disabled="!quiz.isValid" />
-            {{ quiz.name }}
-          </label>
+          <div class="quiz-left">
+            <!--<input type="checkbox" v-model="quiz.enabled" :disabled="!quiz.isValid" />-->
+            <button
+              class="checkbox-button"
+              :class="{ disabled: !quiz.isValid }"
+              @click="toggleEnabled(quiz)"
+              :disabled="!quiz.isValid"
+            >
+              <Icon :path="quiz.isValid ? (quiz.enabled ? mdiCheckboxMarked : mdiCheckboxBlankOutline) : mdiAlertOutline" :size="20" />
+            </button>
+            <span class="quiz-name">{{ quiz.name }}</span>
           <p v-if="!quiz.isValid" class="error">
             There are errors in one or more of your questions. This quiz will be disabled until conflicts are resolved.
           </p>
-          <div class="row-buttons">
-            <IconButton @click="editQuiz(quiz)" :path="mdiPencil" size="24" />
-            <IconButton @click="deleteQuiz(quiz.id)" :path="mdiDelete" size="24" />
+          </div>
+          <div class="quiz-right">
+            <IconButton @click="editQuiz(quiz)" :path="mdiPencil" size="24" class="rounded-button" />
+            <IconButton @click="deleteQuiz(quiz.id)" :path="mdiDelete" size="24" class="rounded-button" />
           </div>
         </li>
       </ul>
@@ -32,20 +40,24 @@
         <li v-for="quiz in quizzes.filter((q) => q.origin === 'local')" :key="quiz.id">
           <label>
             <input type="checkbox" v-model="quiz.enabled" />
-            {{ quiz.name }}
+            <span class="quiz-name">{{ quiz.name }}</span>
           </label>
-          <div class="row-buttons">
+          <div class="quiz-right">
             <IconButton @click="editQuiz(quiz)" :path="mdiPencil" size="24" />
             <IconButton @click="deleteQuiz(quiz.id)" :path="mdiDelete" size="24" />
           </div>
         </li>
       </ul>
       <IconButton @click="addQuiz" :path="mdiPlusBox" size="24" />
-      <IconButton @click="exportQuizzes" :path="mdiFileExport" size="24" :label="'Export Quizzes'"/>
+      <IconButton @click="exportQuizzes" :path="mdiFileExport" size="24" :label="'Export Quizzes'" class="rounded-button" />
     </div>
 
-    <EditQuizModal v-if="selectedQuiz !== null" :selectedQuiz="selectedQuiz" @close="selectedQuiz = null"
-      @update-quiz-validity="handleQuizValidity" />
+    <EditQuizModal
+      v-if="selectedQuiz !== null"
+      :selectedQuiz="selectedQuiz"
+      @close="selectedQuiz = null"
+      @update-quiz-validity="handleQuizValidity"
+    />
   </div>
 </template>
 
@@ -54,7 +66,8 @@ import { ref, nextTick } from 'vue';
 import { useQuizStorage } from '../composables/quizStorage.js';
 import EditQuizModal from '../components/EditQuizModal.vue';
 import IconButton from '../components/IconButton.vue';
-import { mdiPlusBox, mdiFileExport, mdiPencil, mdiDelete } from '@mdi/js';
+import { mdiPlusBox, mdiFileExport, mdiPencil, mdiDelete, mdiCheckboxMarked, mdiCheckboxBlankOutline, mdiAlertOutline } from '@mdi/js';
+import Icon from '../components/Icon.vue';
 
 const { quizzes, importQuiz, deleteQuiz } = useQuizStorage();
 const selectedQuiz = ref(null);
@@ -63,6 +76,12 @@ const obsidianQuizzes = quizzes.value.filter((q) => q.origin === 'obsidian');
 
 const importFailedMessage = ref(null);
 
+
+// -----------------------------
+// Adding / Deleting
+// -----------------------------
+
+// Add new blank quiz
 function addQuiz() {
   const newQuiz = {
     name: 'Untitled Quiz',
@@ -73,6 +92,12 @@ function addQuiz() {
   importQuiz(newQuiz, newQuiz.name, newQuiz.origin);
 }
 
+// DELETION HANDLED BY useQuizStorage
+
+
+// -----------------------------
+// Import / Export
+// -----------------------------
 function handleImport(event) {
   importFailedMessage.value = null;
 
@@ -124,6 +149,10 @@ function exportQuizzes() {
   link.click();
 }
 
+
+// -----------------------------
+// Editing
+// -----------------------------
 function editQuiz(quiz) {
   selectedQuiz.value = quiz;
   console.log('Selected Quiz:', selectedQuiz.value);
@@ -133,6 +162,14 @@ function handleQuizValidity({ isValid, disable }) {
   if (!selectedQuiz.value) return;
   selectedQuiz.value.isValid = isValid;
   if (disable) selectedQuiz.value.enabled = false;
+}
+
+// -----------------------------
+// Helpers
+// -----------------------------
+function toggleEnabled(quiz) {
+  if (!quiz.isValid) return;
+  quiz.enabled = !quiz.enabled;
 }
 </script>
 
@@ -184,20 +221,37 @@ li:hover {
 
 label {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
-  font-weight: 500;
+  font-weight: 800;
 }
 
-.row-buttons {
+.quiz-left {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 1.2rem;
+  position: relative;
+  top: -1px;
+}
+
+.quiz-right {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
 }
 
+
 /* Buttons */
-button {
+.rounded-button {
   background-color: var(--accent-color);
   color: white;
   border: none;
@@ -207,8 +261,32 @@ button {
   transition: background-color 0.2s ease;
 }
 
-button:hover {
+.rounded-button:hover {
   background-color: var(--accent-color-shade);
+}
+
+.checkbox-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: transform 0.15s ease, color 0.2s ease;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.checkbox-button:hover:not(.disabled) {
+  transform: scale(1.2);
+  color: var(--accent-color);
+}
+
+.checkbox-button.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: var(--error-color);
 }
 
 .delete-quiz-button {
